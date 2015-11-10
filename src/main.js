@@ -28,7 +28,6 @@ require('../libs/angular-bootstrap/ui-bootstrap-tpls');
                 url: '/dashboard',
                 templateUrl: 'modules/index/dashboard.html',
                 data: { pageTitle: '仪表板', pageSubTitle: '统计 & 报表' },
-                controllerUrl: 'modules/index/dashboardController.js',
                 controller: 'dashboardController'
             })
         ;

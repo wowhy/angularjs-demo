@@ -56,7 +56,7 @@ module.exports = function(grunt) {
             }
             , dist: {
                 files: {
-                    'dist/main.min.js': ['<%= browserify.main.dest %>']
+                    'dist/main.js': ['<%= browserify.main.dest %>']
                 }
             }
         },
@@ -89,7 +89,7 @@ module.exports = function(grunt) {
                 src: ['*.html', 'app/**/*.html'],
                 dest: 'dist'
             }
-        },
+        },      
 
        watch: {
             scripts:{

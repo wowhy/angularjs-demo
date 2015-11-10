@@ -19,9 +19,7 @@ module.exports = function(grunt) {
                     expand: true, 
                     cwd: 'src', 
                     src: [
-                        'libs/**/*.{js,css,eot,svg,ttf,woff,woff2}', 
-                        '!libs/bootstrap/**',
-                        'libs/bootstrap/dist/**',
+                        'libs/**/*.{css,eot,svg,ttf,woff,woff2}', 
                         '!libs/**/Gruntfile.js',
                         '!libs/*/src/**', 
                         '!libs/**/package.js',
@@ -99,7 +97,7 @@ module.exports = function(grunt) {
                 tasks: ['scripts']
             },
             assets:{
-                files: ['src/assets/**/*.*'],
+                files: ['src/assets/**/*.*', 'src/app/**/*.html', 'src/*.html'],
                 tasks: ['assets']
             },
             options: {

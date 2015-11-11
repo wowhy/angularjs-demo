@@ -117,7 +117,7 @@ function userService($http, $q) {
 angular.module('example.service')
 	   .service('userService', ['$http', '$q', userService]);
 },{}],3:[function(require,module,exports){
-function msgFactory($modal, setting){
+function msgFactory($uibModal, setting){
     var msg = {};
     
     msg.confirm = function (model) {
@@ -128,7 +128,7 @@ function msgFactory($modal, setting){
             model.cancel = '取消';
         }
 
-        return $modal.open({
+        return $uibModal.open({
             templateUrl: 'app/templates/confirm.html',
             backdrop: 'static',
             controller: ['$scope', '$modalInstance', 'args', function ($scope, $modalInstance, args) {
@@ -158,7 +158,7 @@ function msgFactory($modal, setting){
 }
 
 angular.module('example.utility')
-       .factory('msg', ['$modal', msgFactory]);
+       .factory('msg', ['$uibModal', msgFactory]);
 },{}],4:[function(require,module,exports){
 function settingFactory(){
 	var setting = {

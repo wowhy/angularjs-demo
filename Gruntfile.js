@@ -19,7 +19,7 @@ module.exports = function(grunt) {
                     expand: true, 
                     cwd: 'src', 
                     src: [
-                        'libs/**/*.{css,eot,svg,ttf,woff,woff2}',
+                        'libs/**/*.{js,css,eot,svg,ttf,woff,woff2}',
                         '!libs/*/src/**'
                     ], 
                     dest: 'dist' 

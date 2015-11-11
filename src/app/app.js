@@ -1,11 +1,11 @@
 /**
  * Created by hongyuan on 2015/11/9.
  */
-window.$ = window.jQuery = require('../libs/jquery/dist/jquery');
-require('../libs/angular');
-require('../libs/angular-ui-router/release/angular-ui-router');
-require('../libs/angular-bootstrap/ui-bootstrap-tpls');
-require('../libs/angular-ui-grid/ui-grid');
+// window.$ = window.jQuery = require('../libs/jquery/dist/jquery');
+//require('../libs/angular');
+//require('../libs/angular-ui-router/release/angular-ui-router');
+//require('../libs/angular-bootstrap/ui-bootstrap-tpls');
+//require('../libs/angular-ui-grid/ui-grid');
 
 function configRoute($stateProvider, $urlRouterProvider){
     // 默认路由

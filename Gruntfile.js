@@ -19,11 +19,8 @@ module.exports = function(grunt) {
                     expand: true, 
                     cwd: 'src', 
                     src: [
-                        'libs/**/*.{css,eot,svg,ttf,woff,woff2}', 
-                        '!libs/**/Gruntfile.js',
-                        '!libs/*/src/**', 
-                        '!libs/**/package.js',
-                        '!libs/**/index.js'
+                        'libs/**/*.{css,eot,svg,ttf,woff,woff2}',
+                        '!libs/*/src/**'
                     ], 
                     dest: 'dist' 
                 }]
@@ -32,29 +29,23 @@ module.exports = function(grunt) {
         
         // 解决依赖关系
         browserify: {
-            main:{
+            components: {
+                src: 'src/app/components/**/*.js',
+                dest: 'src/app/components.js'
+            },
+            modules: {
+                src: 'src/app/modules/**/*.js',
+                dest: 'src/app/modules.js'
+            },
+            main: {
                 src: 'src/app/app.js',
                 dest: 'src/main.js'
             }
         },
         
-        // 合并JS文件
-        concat: {
-            options:{
-                separator: ';'
-            }
-            // , components: {
-            //     src: ['src/components/**/*.js'],
-            //     dest: 'dist/<%= pkg.name %>.js'
-            // }
-        },
-        
         // 压缩JS文件
         uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-            }
-            , dist: {
+            dist: {
                 files: {
                     'dist/main.js': ['<%= browserify.main.dest %>']
                 }
@@ -92,13 +83,13 @@ module.exports = function(grunt) {
         },      
 
        watch: {
-            scripts:{
-                files: ['src/**/*.js'],
-                tasks: ['scripts']
+            assets: {
+                files: ['src/**/*.*', '!src/app/**/*.js', '!src/main.js'],
+                tasks: ['default']
             },
-            assets:{
-                files: ['src/assets/**/*.*', 'src/app/**/*.html', 'src/*.html'],
-                tasks: ['assets']
+            scripts:{
+                files: ['src/app/**/*.js', '!src/app/modules.js', '!src/app/components.js'],
+                tasks: ['scripts']
             },
             options: {
                 spawn: true,
@@ -110,7 +101,6 @@ module.exports = function(grunt) {
     // 加载任务插件。
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
@@ -119,8 +109,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-browserify');
 
     // 任务列表。
-    grunt.registerTask('scripts', ['browserify', 'concat', 'uglify']);
-    grunt.registerTask('assets', ['copy', 'cssmin', 'htmlmin']);    
-    grunt.registerTask('all', ['clean', 'copy', 'browserify', 'concat', 'uglify', 'cssmin', 'htmlmin']);
-    grunt.registerTask('default', ['copy', 'browserify', 'concat', 'uglify', 'cssmin', 'htmlmin']);
+    grunt.registerTask('scripts', ['browserify', 'uglify']);
+    grunt.registerTask('all', ['clean', 'copy', 'browserify', 'uglify', 'cssmin', 'htmlmin']);
+    grunt.registerTask('default', ['copy', 'browserify', 'uglify', 'cssmin', 'htmlmin']);
 };

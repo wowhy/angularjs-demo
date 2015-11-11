@@ -3,7 +3,7 @@
         <div class="container">
             <div class="page-logo">
                 <a href="#/dashboard">
-                   <h2 style="color:darkseagreen;">Howonder</h2>
+                    <h2 style="color:darkseagreen;">Howonder</h2>
                 </a>
             </div>
             <div class="top-menu">
@@ -53,16 +53,9 @@
     </div>
     <div class="page-header-menu">
         <div class="container">
-            <form class="search-form" method="GET">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="query">
-                    <span class="input-group-btn">
-                        <a href="javascript:;" class="btn submit"><i class="fa fa-search"></i></a>
-                    </span>
-                </div>
-            </form>
             <div class="hor-menu">
                 <ul class="nav navbar-nav">
+                    <!--
                     <li class="active">
                         <a href="#/dashboard">仪表板</a>
                     </li>
@@ -89,6 +82,19 @@
                                     选择控件
                                 </a>
                             </li>
+                        </ul>
+                    </li>
+                    -->
+                    <li class="menu-dropdown classic-menu-dropdown"
+                        uib-dropdown ng-repeat="menu in menus" >
+                        <a href="#{{menu.url}}" 
+                           ng-if="menu.menus" ng-bind="menu.name" uib-dropdown-toggle></a>
+                        <a href="#{{menu.url}}" 
+                           ng-if="!menu.menus" ng-bind="menu.name"></a>   
+                        <ul ng-if="menu.menus" class="dropdown-menu">
+                            <li ng-repeat="subMenu in menu.menus">
+                                <a href="#{{subMenu.url}}" ng-bind="subMenu.name"></a>
+                            </li>                            
                         </ul>
                     </li>
                 </ul>

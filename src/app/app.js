@@ -5,13 +5,7 @@ window.$ = window.jQuery = require('../libs/jquery/dist/jquery');
 require('../libs/angular');
 require('../libs/angular-ui-router/release/angular-ui-router');
 require('../libs/angular-bootstrap/ui-bootstrap-tpls');
-
-function settingFactory(){
-	var setting = {
-		applicationName: '示例网站'
-	};
-	return setting;
-};
+require('../libs/angular-ui-grid/ui-grid');
 
 function configRoute($stateProvider, $urlRouterProvider){
     // 默认路由
@@ -33,11 +27,22 @@ function configRoute($stateProvider, $urlRouterProvider){
             data: { pageTitle: '仪表板', pageSubTitle: '统计 & 报表' },
             controller: 'dashboardController'
         })
+        .state('user', {
+            url: '/rms/user',
+            templateUrl: 'app/modules/user/user-list.html',
+            data: { pageTitle: '用户管理', pageSubTitle: '列表' },
+            controller: 'userController'
+        })
     ;
 }
 
-function appController($scope){
-	
+function appController($scope, menuService){
+    $scope.menus = [];
+    
+    menuService.authorizationMenus()
+               .then(function(menus){
+                   $scope.menus = menus;
+               });
 }
 
 function run($rootScope, $state, setting){
@@ -45,14 +50,15 @@ function run($rootScope, $state, setting){
 	$rootScope.setting = setting;
 }
 
-angular.module('example.controllers', []);
-angular.module('example.services', []);
-angular.module('example.utilities', []);
-angular.module('example', ['example.controllers', 'example.services', 'example.utilities', 'ui.router', 'ui.bootstrap'])
-	   .factory('setting', [settingFactory])
+angular.module('example.utility', ['ui.router', 'ui.bootstrap']);
+angular.module('example.service', ['example.utility']);
+angular.module('example.controller', ['example.service', 'example.utility', 'ui.router', 'ui.bootstrap']);
+
+
+angular.module('example', ['example.controller', 'example.service', 'example.utility', 'ui.router', 'ui.bootstrap', 'ui.grid', 'ui.grid.pagination'])
 	   .config(['$stateProvider', '$urlRouterProvider', configRoute])
-	   .controller('appController', ['$scope', appController])
+	   .controller('appController', ['$scope', 'menuService', appController])
 	   .run(['$rootScope', '$state', 'setting', run]);
        
-require('./modules')
-require('./components')
+require('./modules');
+require('./components');

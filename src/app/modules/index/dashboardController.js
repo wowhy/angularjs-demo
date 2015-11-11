@@ -1,6 +1,5 @@
-function dashboardController($scope){
-	
+function dashboardController($scope, msg){
 }
 
-angular.module('example.controllers')
-	   .controller('dashboardController', ['$scope', dashboardController]);
+angular.module('example.controller')
+	   .controller('dashboardController', ['$scope', 'msg', dashboardController]);

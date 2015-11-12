@@ -28,3 +28,5 @@ node_modules
 
 ### VisualStudioCode template
 .settings
+
+.idea

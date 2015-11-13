@@ -1,60 +1,52 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        
+
         // 清理文件
         clean: {
             all: ['dist/**']
         },
-        
+
         // 复制资源文件
         copy: {
             assets: {
-                files: [{ expand: true, cwd: 'src', src: ['assets/img/**/*.*'], dest: 'dist' }]
+                files: [{expand: true, cwd: 'src', src: ['assets/img/**/*.*'], dest: 'dist'}]
             },
             libs: {
                 files: [{
-                    expand: true, 
-                    cwd: 'src', 
+                    expand: true,
+                    cwd: 'src',
                     src: [
                         'libs/**/*.{js,css,eot,svg,ttf,woff,woff2}',
                         '!libs/*/src/**'
-                    ], 
-                    dest: 'dist' 
+                    ],
+                    dest: 'dist'
                 }]
             }
         },
-        
+
         // 解决依赖关系
         browserify: {
-            components: {
-                src: 'src/app/components/**/*.js',
-                dest: 'src/app/components.js'
-            },
-            modules: {
-                src: 'src/app/modules/**/*.js',
-                dest: 'src/app/modules.js'
-            },
-            main: {
-                src: 'src/app/app.js',
-                dest: 'src/main.js'
+            'index': {
+                src: 'src/app/modules/index/app.js',
+                dest: 'src/app/modules/index/main.js'
             }
         },
-        
+
         // 压缩JS文件
         uglify: {
             dist: {
                 files: {
-                    'dist/main.js': ['<%= browserify.main.dest %>']
+                    'dist/app/modules/index/main.js': ['<%= browserify.index.dest %>']
                 }
             }
         },
-        
+
         // 压缩CSS文件
         cssmin: {
-            options: { report: 'gzip' },
+            options: {report: 'gzip'},
             css: {
                 expand: true,
                 cwd: 'src',
@@ -62,9 +54,9 @@ module.exports = function(grunt) {
                 dest: 'dist'
             }
         },
-        
+
         // 压缩HTML文件
-        htmlmin:{
+        htmlmin: {
             options: {
                 removeComments: true,
                 removeCommentsFromCDATA: true,
@@ -80,14 +72,14 @@ module.exports = function(grunt) {
                 src: ['*.html', 'app/**/*.html'],
                 dest: 'dist'
             }
-        },      
+        },
 
-       watch: {
+        watch: {
             assets: {
                 files: ['src/**/*.*', '!src/app/**/*.js', '!src/main.js'],
                 tasks: ['default']
             },
-            scripts:{
+            scripts: {
                 files: ['src/app/**/*.js', '!src/app/modules.js', '!src/app/components.js'],
                 tasks: ['scripts']
             },

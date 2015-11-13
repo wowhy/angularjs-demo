@@ -1,4 +1,6 @@
 function userService($http, $q) {
+    var me = this;
+
     this.add = function (user) {
         var $post = {
             Code: user.Code,
@@ -10,7 +12,7 @@ function userService($http, $q) {
 
         return $http({
             method: 'POST',
-            url: 'http://localhost:45020/DataService.svc/Users',
+            url: 'http://localhost:1234/DataService.svc/Users',
             data: $post
         }).then(function (data) {
             var result = {};
@@ -35,7 +37,7 @@ function userService($http, $q) {
 
         return $http({
             method: 'PATCH',
-            url: 'http://localhost:45020/DataService.svc/Users(' + user.Id + ')', 
+            url: 'http://localhost:1234/DataService.svc/Users(' + user.Id + ')', 
             data: $patch
         }).then(function (data) {
             var result = {};
@@ -52,7 +54,7 @@ function userService($http, $q) {
     }
 
     this.removeById = function (id) {
-        return $http({ method: 'DELETE', url: 'http://localhost:45020/DataService.svc/Users(' + id + ')' }).then(function (data) {
+        return $http({ method: 'DELETE', url: 'http://localhost:1234/DataService.svc/Users(' + id + ')' }).then(function (data) {
             var result = {};
             if (data.status == 204 || data.status == 200) {
                 result.success = true;
@@ -67,7 +69,7 @@ function userService($http, $q) {
     }
 
     this.getById = function (id) {
-        return $http.get('http://localhost:45020/DataService.svc/Users(' + id + ')').then(function (data) {
+        return $http.get('http://localhost:1234/DataService.svc/Users(' + id + ')').then(function (data) {
             return data.data;
         });
     }
@@ -75,8 +77,8 @@ function userService($http, $q) {
     this.search = function (page, limit, filter) {
         // http://localhost:1234/DataService.svc/Users?$skip=20&$top=20
         var $filter = {};
-        var $total = $http.get('http://localhost:45020/DataService.svc/Users/$count'/*, { params: { $filter: $filter } }*/);
-        var $data = $http.get('http://localhost:45020/DataService.svc/Users', {
+        var $total = $http.get('http://localhost:1234/DataService.svc/Users/$count'/*, { params: { $filter: $filter } }*/);
+        var $data = $http.get('http://localhost:1234/DataService.svc/Users', {
             params: {
                 $skip: (page - 1) * limit,
                 $top: limit /*,

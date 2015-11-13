@@ -12,13 +12,13 @@ function msgFactory($uibModal, setting){
         return $uibModal.open({
             templateUrl: 'app/templates/confirm.html',
             backdrop: 'static',
-            controller: ['$scope', '$modalInstance', 'args', function ($scope, $modalInstance, args) {
+            controller: ['$scope', '$uibModalInstance', 'args', function ($scope, $uibModalInstance, args) {
                 $scope.ok = function () {
-                    $modalInstance.close(true);
+                    $uibModalInstance.close(true);
                 }
 
                 $scope.cancel = function () {
-                    $modalInstance.close(false);
+                    $uibModalInstance.close(false);
                 }
 
                 $scope.model = args;

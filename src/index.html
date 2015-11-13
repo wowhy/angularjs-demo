@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" ng-app="example">
+<html lang="zh-CN" ng-app="example.index">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,15 +26,9 @@
     <script src="libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script src="libs/angular-ui-grid/ui-grid.min.js"></script>
     
-    <script src="main.js"></script>
+    <script src="app/modules/index/main.js"></script>
 </head>
-<body ng-controller="appController">
-    <div class="page-spinner-bar">
-        <div class="bounce1"></div>
-        <div class="bounce2"></div>
-        <div class="bounce3"></div>
-    </div>
-    
+<body ng-controller="indexController">
     <header ng-include="'app/templates/header.html'"></header>
     <main class="page-container">
         <div ng-include="'app/templates/page-head.html'"

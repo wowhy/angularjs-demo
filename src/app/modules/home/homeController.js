@@ -4,7 +4,7 @@
 require('../../components/utilities/msg');
 require('../../components/services/menu');
 
-function indexController($scope, menuService){
+function homeController($scope, menuService){
     $scope.menus = [];
 
     menuService.authorizationMenus()
@@ -13,5 +13,5 @@ function indexController($scope, menuService){
         });
 }
 
-angular.module('example.index')
-    .controller('indexController', ['$scope', 'menuService', indexController])
+angular.module('example')
+    .controller('homeController', ['$scope', 'menuService', homeController])

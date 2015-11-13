@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" ng-app="example.index">
+<html lang="zh-CN" ng-app="example">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,21 +26,9 @@
     <script src="libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script src="libs/angular-ui-grid/ui-grid.min.js"></script>
     
-    <script src="app/modules/index/main.js"></script>
+    <script src="app/main.js"></script>
 </head>
-<body ng-controller="indexController">
-    <header ng-include="'app/templates/header.html'"></header>
-    <main class="page-container">
-        <div ng-include="'app/templates/page-head.html'"
-             class="page-head">
-        </div>
-        <div class="page-content">
-            <div class="container">
-                <div ui-view class="fade-in-up">
-                </div>
-            </div>
-        </div>
-    </main>
-    <footer ng-include="'app/templates/footer.html'"></footer>
+<body>
+    <div ui-view></div>
 </body>
 </html>

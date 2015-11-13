@@ -1,3 +1,6 @@
+require('../../components/services/user');
+require('../../components/utilities/msg');
+
 function userController($scope, userService, msg) {
 	$scope.list = [];
 	
@@ -17,7 +20,7 @@ function userController($scope, userService, msg) {
 			   });
 }
 
-angular.module('example.controller')
+angular.module('example')
 	   .filter('userStatus', [function() {
 		   return function(value) {
 			   switch(value){

@@ -29,9 +29,9 @@ module.exports = function (grunt) {
 
         // 解决依赖关系
         browserify: {
-            'index': {
-                src: 'src/app/modules/index/app.js',
-                dest: 'src/app/modules/index/main.js'
+            'app': {
+                src: 'src/app/app.js',
+                dest: 'src/app/main.js'
             }
         },
 
@@ -39,7 +39,7 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 files: {
-                    'dist/app/modules/index/main.js': ['<%= browserify.index.dest %>']
+                    'dist/app/main.js': ['<%= browserify.app.dest %>']
                 }
             }
         },

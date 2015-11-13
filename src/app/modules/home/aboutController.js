@@ -2,5 +2,5 @@ function aboutController($scope){
 	console.log('about');
 }
 
-angular.module('example.index')
+angular.module('example')
 	   .controller('aboutController', ['$scope', aboutController]);

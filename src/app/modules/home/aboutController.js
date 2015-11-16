@@ -1,3 +1,5 @@
+require('../../core');
+
 function aboutController($scope){
 	console.log('about');
 }

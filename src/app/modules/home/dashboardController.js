@@ -1,3 +1,4 @@
+require('../../core');
 require('../../components/utilities/msg');
 
 function dashboardController($scope, msg){

@@ -1,6 +1,7 @@
 /**
  * Created by hongyuan on 2015/11/13.
  */
+require('../../core');
 require('../../components/utilities/msg');
 require('../../components/services/menu');
 

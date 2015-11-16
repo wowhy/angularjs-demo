@@ -80,7 +80,7 @@ module.exports = function (grunt) {
                 tasks: ['default']
             },
             scripts: {
-                files: ['src/app/**/*.js', '!src/app/modules.js', '!src/app/components.js'],
+                files: ['src/app/**/*.js', '!src/app/main.js'],
                 tasks: ['scripts']
             },
             options: {

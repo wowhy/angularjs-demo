@@ -9,11 +9,7 @@ require('./homeController');
 require('./dashboardController');
 require('./aboutController');
 
-function route($stateProvider, $urlRouterProvider){
-    $urlRouterProvider
-        .when('', '/login')
-        .when('/', '/dashboard');
-
+function route($stateProvider){
     $stateProvider
         .state('404', {
             url: '/404',
@@ -21,18 +17,18 @@ function route($stateProvider, $urlRouterProvider){
         })
         .state('about', {
             url: '/about',
-            templateUrl: 'app/modules/home/about.html',
+            templateUrl: 'app/modules/admin/about.html',
             controller: 'aboutController'
         })
-        .state('home', {
-            templateUrl: 'app/modules/home/index.html',
+        .state('admin', {
+            templateUrl: 'app/modules/admin/index.html',
             controller: 'homeController'
         })
-        .state('home.dashboard', {
+        .state('admin.dashboard', {
             url: '/dashboard',
             views: {
                 'page': {
-                    templateUrl: 'app/modules/home/dashboard.html',
+                    templateUrl: 'app/modules/admin/dashboard.html',
                     controller: 'dashboardController'
                 }
             },
@@ -42,4 +38,4 @@ function route($stateProvider, $urlRouterProvider){
 }
 
 angular.module('example')
-    .config(['$stateProvider', '$urlRouterProvider', route]);
+    .config(['$stateProvider', route]);

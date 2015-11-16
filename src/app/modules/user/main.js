@@ -3,12 +3,12 @@
  */
 
 require('../../core');
-require('../home/homeController');
+require('../admin/homeController');
 require('./userController');
 
 function route($stateProvider) {
     $stateProvider
-        .state('home.user', {
+        .state('admin.user', {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
             views: {

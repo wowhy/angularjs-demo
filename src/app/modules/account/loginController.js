@@ -7,7 +7,7 @@ require('../../components/utilities/setting');
 function loginController($scope, $location, setting) {
     $scope.login = function () {
         setting.setAuth($scope.username);
-        $location.path('/');
+        $location.path('/dashboard');
     }
 }
 

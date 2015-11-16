@@ -5,7 +5,8 @@
 
 require('./core');
 require('./components/utilities/setting');
-require('./modules/home/main');
+require('./modules/frontend/main');
+require('./modules/admin/main');
 require('./modules/account/main');
 require('./modules/user/main');
 
@@ -15,7 +16,7 @@ function run($rootScope, $state, setting) {
 
     $rootScope.$on('$stateChangeStart',
         function (event, toState/*, toParams, fromState, fromParams*/) {
-            if (toState.name.indexOf('home') != -1) {
+            if (toState.name.indexOf('admin') != -1) {
                 if (!setting.isAuthenticated) {
                     event.preventDefault();
                     setTimeout(function () {
@@ -28,7 +29,7 @@ function run($rootScope, $state, setting) {
 
 angular.module('example')
     .run(['$rootScope', '$state', 'setting', run]);
-},{"./components/utilities/setting":5,"./core":6,"./modules/account/main":8,"./modules/home/main":12,"./modules/user/main":13}],2:[function(require,module,exports){
+},{"./components/utilities/setting":5,"./core":6,"./modules/account/main":8,"./modules/admin/main":12,"./modules/frontend/main":13,"./modules/user/main":14}],2:[function(require,module,exports){
 function menuService($http, $q){
 	this.authorizationMenus = function() {
 		var menus = [
@@ -265,7 +266,7 @@ require('../../components/utilities/setting');
 function loginController($scope, $location, setting) {
     $scope.login = function () {
         setting.setAuth($scope.username);
-        $location.path('/');
+        $location.path('/dashboard');
     }
 }
 
@@ -341,11 +342,7 @@ require('./homeController');
 require('./dashboardController');
 require('./aboutController');
 
-function route($stateProvider, $urlRouterProvider){
-    $urlRouterProvider
-        .when('', '/login')
-        .when('/', '/dashboard');
-
+function route($stateProvider){
     $stateProvider
         .state('404', {
             url: '/404',
@@ -353,18 +350,18 @@ function route($stateProvider, $urlRouterProvider){
         })
         .state('about', {
             url: '/about',
-            templateUrl: 'app/modules/home/about.html',
+            templateUrl: 'app/modules/admin/about.html',
             controller: 'aboutController'
         })
-        .state('home', {
-            templateUrl: 'app/modules/home/index.html',
+        .state('admin', {
+            templateUrl: 'app/modules/admin/index.html',
             controller: 'homeController'
         })
-        .state('home.dashboard', {
+        .state('admin.dashboard', {
             url: '/dashboard',
             views: {
                 'page': {
-                    templateUrl: 'app/modules/home/dashboard.html',
+                    templateUrl: 'app/modules/admin/dashboard.html',
                     controller: 'dashboardController'
                 }
             },
@@ -374,19 +371,39 @@ function route($stateProvider, $urlRouterProvider){
 }
 
 angular.module('example')
-    .config(['$stateProvider', '$urlRouterProvider', route]);
+    .config(['$stateProvider', route]);
 },{"../../core":6,"./aboutController":9,"./dashboardController":10,"./homeController":11}],13:[function(require,module,exports){
+/**
+ * Created by wowhy on 2015/11/16.
+ */
+require('../../core');
+
+function route($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/');
+
+    $stateProvider
+        .state('frontend', {
+            url: '/',
+            templateUrl: 'app/modules/frontend/index.html',
+            data: {pageTitle: '主页', pageSubTitle: ''}
+        })
+    ;
+}
+
+angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
+
+},{"../../core":6}],14:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
 require('../../core');
-require('../home/homeController');
+require('../admin/homeController');
 require('./userController');
 
 function route($stateProvider) {
     $stateProvider
-        .state('home.user', {
+        .state('admin.user', {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
             views: {
@@ -400,7 +417,7 @@ function route($stateProvider) {
 }
 
 angular.module('example').config(['$stateProvider', route]);
-},{"../../core":6,"../home/homeController":11,"./userController":14}],14:[function(require,module,exports){
+},{"../../core":6,"../admin/homeController":11,"./userController":15}],15:[function(require,module,exports){
 require('../../components/services/user');
 require('../../components/utilities/msg');
 

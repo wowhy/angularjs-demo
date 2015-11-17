@@ -1,4 +1,6 @@
-function userService($http, $q) {
+require('../utilities/setting')
+
+function userService($http, $q, setting) {
     var me = this;
 
     this.add = function (user) {
@@ -26,7 +28,7 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.edit = function (user) {
         var $patch = {
@@ -51,10 +53,13 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.removeById = function (id) {
-        return $http({ method: 'DELETE', url: 'http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')' }).then(function (data) {
+        return $http({
+            method: 'DELETE',
+            url: 'http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')'
+        }).then(function (data) {
             var result = {};
             if (data.status == 204 || data.status == 200) {
                 result.success = true;
@@ -66,13 +71,13 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.getById = function (id) {
         return $http.get('http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')').then(function (data) {
             return data.data;
         });
-    }
+    };
 
     this.search = function (page, limit, filter) {
         // http://localhost:1234/DataService.svc/Users?$skip=20&$top=20
@@ -82,7 +87,7 @@ function userService($http, $q) {
             params: {
                 $skip: (page - 1) * limit,
                 $top: limit /*,
-                $filter: concatFilter(filter)*/
+                 $filter: concatFilter(filter)*/
             }
         });
 
@@ -92,8 +97,20 @@ function userService($http, $q) {
                 data: response[1].data.value
             };
         });
+    };
+
+    this.login = function (username, password) {
+        setting.setAuth(username);
+
+        var defer = $q.defer();
+        defer.resolve({success: true});
+        return defer.promise;
+    }
+
+    this.logout = function () {
+        setting.setAuth('');
     }
 }
 
 angular.module('example.service')
-	   .service('userService', ['$http', '$q', userService]);
+	   .service('userService', ['$http', '$q', 'setting', userService]);

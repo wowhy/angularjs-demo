@@ -22,9 +22,11 @@ function removeCookie(name){
 function settingFactory() {
     var setting = {
         applicationName: '培训管理系统',
+        tel: '0411-88888888',
+        email: 'wowhy@outlook.com',
 
         setAuth: function (username) {
-            this.isAuthenticated = true;
+            this.isAuthenticated = !!username;
             this.username = username;
 
             setCookie('username', username, 1);

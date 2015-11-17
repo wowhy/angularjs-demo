@@ -29,28 +29,62 @@ function run($rootScope, $state, setting) {
 
 angular.module('example')
     .run(['$rootScope', '$state', 'setting', run]);
-},{"./components/utilities/setting":5,"./core":6,"./modules/account/main":8,"./modules/admin/main":12,"./modules/frontend/main":13,"./modules/user/main":14}],2:[function(require,module,exports){
-function menuService($http, $q){
-	this.authorizationMenus = function() {
-		var menus = [
-			//{ name: '仪表板', url: '/dashboard' },
-			{ name: '权限管理系统', menus: [{name: '用户管理', url: '/user'}] }
-		];
-		
-		var defer = $q.defer();
-		
-		setTimeout(function(){
-			defer.resolve(menus);
-		}, 200);
-		
-		return defer.promise;
-	}
+},{"./components/utilities/setting":5,"./core":6,"./modules/account/main":8,"./modules/admin/main":12,"./modules/frontend/main":14,"./modules/user/main":15}],2:[function(require,module,exports){
+function menuService($http, $q) {
+    this.authorizationMenus = function () {
+        var menus = [
+            {name: '权限管理系统', menus: [{name: '用户管理', url: '/user'}]}
+        ];
+
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            defer.resolve(menus);
+        }, 200);
+
+        return defer.promise;
+    };
+
+    this.frontendMenus = function () {
+        var menus = [
+            {
+                name: '链家集团',
+                menus: [
+                    {
+                        name: '链家网', url: '#', menus: [{
+                            name: '大连链家', url: 'https://dl.lianjia.com'
+                        },{
+                            name: '北京链家', url: 'https://bj.lianjia.com'
+                        }]
+                    },
+                    {name: '链家理财', url: 'https://licai.lianjia.com/'}
+                ]
+            },{
+                name: '关于',
+                menus: [
+                    { name: '关于', url: '#/about' },
+                    { name: '广告合作', url: '#/ad' },
+                    { name: '友情链接', url: '#/link' }
+                ]
+            }
+        ];
+
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            defer.resolve(menus);
+        }, 200);
+
+        return defer.promise;
+    };
 }
 
 angular.module('example.service')
-	   .service('menuService', ['$http', '$q', menuService]);
+    .service('menuService', ['$http', '$q', menuService]);
 },{}],3:[function(require,module,exports){
-function userService($http, $q) {
+require('../utilities/setting')
+
+function userService($http, $q, setting) {
     var me = this;
 
     this.add = function (user) {
@@ -78,7 +112,7 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.edit = function (user) {
         var $patch = {
@@ -103,10 +137,13 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.removeById = function (id) {
-        return $http({ method: 'DELETE', url: 'http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')' }).then(function (data) {
+        return $http({
+            method: 'DELETE',
+            url: 'http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')'
+        }).then(function (data) {
             var result = {};
             if (data.status == 204 || data.status == 200) {
                 result.success = true;
@@ -118,13 +155,13 @@ function userService($http, $q) {
 
             return result;
         });
-    }
+    };
 
     this.getById = function (id) {
         return $http.get('http://hongyuan-win10:1234/DataService.svc/Users(' + id + ')').then(function (data) {
             return data.data;
         });
-    }
+    };
 
     this.search = function (page, limit, filter) {
         // http://localhost:1234/DataService.svc/Users?$skip=20&$top=20
@@ -134,7 +171,7 @@ function userService($http, $q) {
             params: {
                 $skip: (page - 1) * limit,
                 $top: limit /*,
-                $filter: concatFilter(filter)*/
+                 $filter: concatFilter(filter)*/
             }
         });
 
@@ -144,12 +181,24 @@ function userService($http, $q) {
                 data: response[1].data.value
             };
         });
+    };
+
+    this.login = function (username, password) {
+        setting.setAuth(username);
+
+        var defer = $q.defer();
+        defer.resolve({success: true});
+        return defer.promise;
+    }
+
+    this.logout = function () {
+        setting.setAuth('');
     }
 }
 
 angular.module('example.service')
-	   .service('userService', ['$http', '$q', userService]);
-},{}],4:[function(require,module,exports){
+	   .service('userService', ['$http', '$q', 'setting', userService]);
+},{"../utilities/setting":5}],4:[function(require,module,exports){
 function msgFactory($uibModal, setting){
     var msg = {};
     
@@ -217,9 +266,11 @@ function removeCookie(name){
 function settingFactory() {
     var setting = {
         applicationName: '培训管理系统',
+        tel: '0411-88888888',
+        email: 'wowhy@outlook.com',
 
         setAuth: function (username) {
-            this.isAuthenticated = true;
+            this.isAuthenticated = !!username;
             this.username = username;
 
             setCookie('username', username, 1);
@@ -247,11 +298,14 @@ angular.module('example.utility')
 // require('../libs/angular-bootstrap/ui-bootstrap-tpls');
 // require('../libs/angular-ui-grid/ui-grid');
 
-angular.module('example.utility', ['ui.router', 'ui.bootstrap']);
+angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
 angular.module('example.service', ['example.utility']);
 angular.module('example', [
     'example.service',
     'example.utility',
+    'ngLocale',
+    'ngTouch',
+    'ngAnimate',
     'ui.router',
     'ui.bootstrap',
     'ui.grid'
@@ -261,18 +315,24 @@ angular.module('example', [
  * Created by hongyuan on 2015/11/16.
  */
 require('../../core');
-require('../../components/utilities/setting');
+require('../../components/services/user');
 
-function loginController($scope, $location, setting) {
+function loginController($scope, $location, userService) {
     $scope.login = function () {
-        setting.setAuth($scope.username);
-        $location.path('/dashboard');
+        userService.login($scope.username, $scope.password)
+            .then(function (result) {
+                if (result.success) {
+                    $location.path('/dashboard');
+                } else {
+                    alert(result.message);
+                }
+            });
     }
 }
 
 angular.module('example')
-    .controller('loginController', ['$scope', '$location', 'setting', loginController]);
-},{"../../components/utilities/setting":5,"../../core":6}],8:[function(require,module,exports){
+    .controller('loginController', ['$scope', '$location', 'userService', loginController]);
+},{"../../components/services/user":3,"../../core":6}],8:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -374,9 +434,51 @@ angular.module('example')
     .config(['$stateProvider', route]);
 },{"../../core":6,"./aboutController":9,"./dashboardController":10,"./homeController":11}],13:[function(require,module,exports){
 /**
+ * Created by hongyuan on 2015/11/17.
+ */
+require('../../core');
+require('../../components/services/menu');
+require('../../components/services/user');
+
+function frontendController($scope, menuService, userService) {
+    $scope.slides = [{
+        image: 'assets/global/img/layerslider/slide1/bg.jpg',
+        title: 'Hi',
+        content: 'This is Slide 1'
+    }, {
+        image: 'assets/global/img/layerslider/slide2/bg.jpg',
+        title: 'Hi!',
+        content: 'This is Slide 2'
+    }, {
+        image: 'assets/global/img/layerslider/slide3/bg.jpg',
+        title: 'Hi!!!',
+        content: 'This is Slide 3'
+    }, {
+        image: 'assets/global/img/layerslider/slide5/bg.jpg',
+        title: 'Hi!!!!',
+        content: 'This is Slide 4'
+    }];
+
+    $scope.menus = [];
+
+    $scope.logout = function(){
+        userService.logout();
+    };
+
+    menuService.frontendMenus()
+        .then(function (menus) {
+            $scope.menus = menus;
+        });
+}
+
+angular.module('example')
+    .controller('frontendController', ['$scope', 'menuService', 'userService', frontendController]);
+},{"../../components/services/menu":2,"../../components/services/user":3,"../../core":6}],14:[function(require,module,exports){
+/**
  * Created by wowhy on 2015/11/16.
  */
 require('../../core');
+require('./frontendController');
 
 function route($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
@@ -385,14 +487,15 @@ function route($stateProvider, $urlRouterProvider) {
         .state('frontend', {
             url: '/',
             templateUrl: 'app/modules/frontend/index.html',
-            data: {pageTitle: '主页', pageSubTitle: ''}
+            data: {pageTitle: '主页', pageSubTitle: ''},
+            controller: 'frontendController'
         })
     ;
 }
 
 angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":6}],14:[function(require,module,exports){
+},{"../../core":6,"./frontendController":13}],15:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -417,7 +520,7 @@ function route($stateProvider) {
 }
 
 angular.module('example').config(['$stateProvider', route]);
-},{"../../core":6,"../admin/homeController":11,"./userController":15}],15:[function(require,module,exports){
+},{"../../core":6,"../admin/homeController":11,"./userController":16}],16:[function(require,module,exports){
 require('../../components/services/user');
 require('../../components/utilities/msg');
 

@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         // 复制资源文件
         copy: {
             assets: {
-                files: [{expand: true, cwd: 'src', src: ['assets/img/**/*.*'], dest: 'dist'}]
+                files: [{expand: true, cwd: 'src', src: ['assets/**/*.{png,jpg,gif,ico}'], dest: 'dist'}]
             },
             libs: {
                 files: [{
@@ -50,7 +50,7 @@ module.exports = function (grunt) {
             css: {
                 expand: true,
                 cwd: 'src',
-                src: ['assets/css/*.css'],
+                src: ['assets/**/*.css'],
                 dest: 'dist'
             }
         },
@@ -80,7 +80,7 @@ module.exports = function (grunt) {
                 tasks: ['default']
             },
             scripts: {
-                files: ['src/app/**/*.js', '!src/app/main.js'],
+                files: ['src/app/components/**/*.js', 'src/app/modules/**/*.js', 'src/app/app.js', 'src/app/core.js'],
                 tasks: ['scripts']
             },
             options: {

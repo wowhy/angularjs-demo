@@ -291,7 +291,7 @@ function removeCookie(name){
 
 function settingFactory() {
     var setting = {
-        applicationName: '',
+        applicationName: '报表管理系统',
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
 
@@ -444,7 +444,7 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/theme1/index.html',
+            templateUrl: 'app/modules/admin/layout/index.html',
             controller: 'homeController'
         })
         .state('admin.dashboard', {
@@ -522,7 +522,7 @@ function route($stateProvider, $urlRouterProvider) {
         .state('frontend', {
             url: '/',
             templateUrl: 'app/modules/frontend/index.html',
-            data: {pageTitle: '主页', pageSubTitle: ''},
+            data: { pageTitle: '主页', pageSubTitle: ''},
             controller: 'frontendController'
         })
     ;

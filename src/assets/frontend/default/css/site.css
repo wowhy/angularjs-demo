@@ -368,8 +368,12 @@ Header and header elements
     -webkit-transition: margin 0.3s ease;
 }
 
-.page-slider{
+.page-slider {
     margin-top: -23px;
+}
+
+.page-slider .carousel .carousel-inner .item img {
+    width: 100%;
 }
 
 .page-header-fixed .page-slider{

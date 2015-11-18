@@ -13,6 +13,11 @@ function route($stateProvider, $urlRouterProvider) {
             data: {pageTitle: '登录', pageSubTitle: ''},
             controller: 'loginController'
         })
+        .state('register', {
+            url: '/register',
+            templateUrl: 'app/modules/account/register.html',
+            data: {pageTitle: '注册', pageSubTitle: ''}
+        })
     ;
 }
 

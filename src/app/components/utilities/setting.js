@@ -21,7 +21,7 @@ function removeCookie(name){
 
 function settingFactory() {
     var setting = {
-        applicationName: '培训管理系统',
+        applicationName: '',
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
 

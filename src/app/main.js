@@ -291,7 +291,7 @@ function removeCookie(name){
 
 function settingFactory() {
     var setting = {
-        applicationName: '培训管理系统',
+        applicationName: '',
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
 
@@ -333,8 +333,7 @@ angular.module('example', [
     'ngTouch',
     'ngAnimate',
     'ui.router',
-    'ui.bootstrap',
-    'ui.grid'
+    'ui.bootstrap'
 ]);
 },{}],8:[function(require,module,exports){
 /**
@@ -373,6 +372,11 @@ function route($stateProvider, $urlRouterProvider) {
             templateUrl: 'app/modules/account/login.html',
             data: {pageTitle: '登录', pageSubTitle: ''},
             controller: 'loginController'
+        })
+        .state('register', {
+            url: '/register',
+            templateUrl: 'app/modules/account/register.html',
+            data: {pageTitle: '注册', pageSubTitle: ''}
         })
     ;
 }
@@ -440,7 +444,7 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/index.html',
+            templateUrl: 'app/modules/admin/theme1/index.html',
             controller: 'homeController'
         })
         .state('admin.dashboard', {

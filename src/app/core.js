@@ -17,6 +17,5 @@ angular.module('example', [
     'ngTouch',
     'ngAnimate',
     'ui.router',
-    'ui.bootstrap',
-    'ui.grid'
+    'ui.bootstrap'
 ]);

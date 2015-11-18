@@ -13,7 +13,8 @@
                 <ul class="list-unstyled list-inline pull-right">
                     <li ng-show="!setting.isAuthenticated"><a ng-click="login()">登录</a></li>
                     <li ng-show="!setting.isAuthenticated"><a href="#/register">注册</a></li>
-                    <li ng-show="setting.isAuthenticated"><a href="#/profile" ng-bind="setting.username"></a></li>
+                    <li ng-show="setting.isAuthenticated"><a ng-bind="setting.username"></a></li>
+                    <li ng-show="setting.isAuthenticated"><a href="#/dashboard">后台管理</a></li>
                     <li ng-show="setting.isAuthenticated"><a ng-click="logout()">退出</a></li>
                 </ul>
             </div>
@@ -66,9 +67,9 @@
                         <form action="#">
                             <div class="input-group">
                                 <input type="text" placeholder="Search" class="form-control">
-                    <span class="input-group-btn">
-                      <button class="btn btn-primary" type="submit">Search</button>
-                    </span>
+                                <span class="input-group-btn">
+                                  <button class="btn btn-primary" type="submit">Search</button>
+                                </span>
                             </div>
                         </form>
                     </div>

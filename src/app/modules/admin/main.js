@@ -21,7 +21,7 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/index.html',
+            templateUrl: 'app/modules/admin/theme1/index.html',
             controller: 'homeController'
         })
         .state('admin.dashboard', {

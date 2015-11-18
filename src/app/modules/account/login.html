@@ -1,44 +1,46 @@
-<header class="page-header" ng-include="'app/templates/page-head.html'" >
-</header>
-
-<div class="container">
-    <form name="loginForm" class="form-horizontal" novalidate>
-        <div class="form-group"
-            ng-class="{ 'has-error': loginForm.username.$invalid && loginForm.username.$dirty }">
-            <label class="col-md-1 control-label">用户名：</label>
-            <div class="col-md-4">
-                <input type="email" name="username" class="form-control"
-                       placeholder="用户名"
-                       ng-model="username"
-                       required />
-            </div>
-            <div class="col-md-6 help-block">
-                <span ng-show="loginForm.username.$error.required && loginForm.username.$dirty">用户名不能为空</span>
-                <span ng-show="loginForm.username.$error.email && loginForm.username.$dirty">用户名必须是有效的邮箱地址</span>
-            </div>
-        </div>
-        <div class="form-group"
-             ng-class="{ 'has-error': loginForm.password.$invalid && loginForm.password.$dirty }">
-            <label class="col-md-1 control-label">
-                密码：
-            </label>
-            <div class="col-md-4">
-                <input type="password" name="password" class="form-control"
-                       placeholder="密码"
-                       ng-model="password"
-                       required />
-            </div>
-            <div class="col-md-6 help-block">
-                <span ng-show="loginForm.password.$error.required && loginForm.password.$dirty">用户名不能为空</span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-1 col-md-10">
-                <button class="btn btn-info" ng-click="login()" ng-disabled="loginForm.$invalid">登录</button>
-                <small>&nbsp;&nbsp;&nbsp;&nbsp;没有账号？<a href="#/register">点击注册</a> </small>
-            </div>
-        </div>
-    </form>
+<div class="modal-header">
+    <a class="close" ng-click="$close()">×</a>
+    <h3 class="modal-title">用户登录</h3>
 </div>
+<div class="modal-body">
+    <div class="row">
+        <form name="loginForm" class="form-horizontal" novalidate>
+            <div class="form-group"
+                 ng-class="{ 'has-error': loginForm.username.$invalid && loginForm.username.$dirty }">
+                <label class="col-md-2 control-label">用户名：</label>
 
-<footer ng-include="'app/templates/footer.html'"></footer>
+                <div class="col-md-8">
+                    <input type="email" name="username" class="form-control"
+                           placeholder="用户名"
+                           ng-model="username"
+                           required/>
+                </div>
+                <div class="col-md-offset-2 col-md-8 help-block">
+                    <span ng-show="loginForm.username.$error.required && loginForm.username.$dirty">用户名不能为空</span>
+                    <span ng-show="loginForm.username.$error.email && loginForm.username.$dirty">用户名必须是有效的邮箱地址</span>
+                </div>
+            </div>
+            <div class="form-group"
+                 ng-class="{ 'has-error': loginForm.password.$invalid && loginForm.password.$dirty }">
+                <label class="col-md-2 control-label">
+                    密码：
+                </label>
+
+                <div class="col-md-8">
+                    <input type="password" name="password" class="form-control"
+                           placeholder="密码"
+                           ng-model="password"
+                           required/>
+                </div>
+                <div class="col-md-offset-2 col-md-8 help-block">
+                    <span ng-show="loginForm.password.$error.required && loginForm.password.$dirty">密码不能为空</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<div class="modal-footer">
+    <small>&nbsp;&nbsp;&nbsp;&nbsp;没有账号？<a href="#/register">点击注册</a></small>
+    <button class="btn btn-info" ng-click="login()" ng-disabled="loginForm.$invalid">登录</button>
+</div>

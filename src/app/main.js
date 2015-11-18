@@ -10,7 +10,7 @@ require('./modules/admin/main');
 require('./modules/account/main');
 require('./modules/user/main');
 
-function run($rootScope, $state, setting) {
+function run($rootScope, $state, setting, $uibModalStack) {
     $rootScope.$state = $state;
     $rootScope.setting = setting;
 
@@ -25,11 +25,15 @@ function run($rootScope, $state, setting) {
                 }
             }
         });
+
+    $rootScope.$on('$stateChangeSuccess', function(){
+        $uibModalStack.dismissAll();
+    });
 }
 
 angular.module('example')
-    .run(['$rootScope', '$state', 'setting', run]);
-},{"./components/utilities/setting":5,"./core":6,"./modules/account/main":8,"./modules/admin/main":12,"./modules/frontend/main":14,"./modules/user/main":15}],2:[function(require,module,exports){
+    .run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+},{"./components/utilities/setting":6,"./core":7,"./modules/account/main":9,"./modules/admin/main":13,"./modules/frontend/main":15,"./modules/user/main":16}],2:[function(require,module,exports){
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
@@ -198,7 +202,29 @@ function userService($http, $q, setting) {
 
 angular.module('example.service')
 	   .service('userService', ['$http', '$q', 'setting', userService]);
-},{"../utilities/setting":5}],4:[function(require,module,exports){
+},{"../utilities/setting":6}],4:[function(require,module,exports){
+/**
+ * Created by hongyuan on 2015/11/18.
+ */
+function modalFactory($uibModal, setting){
+    var modal = {};
+
+    modal.show = function(templateUrl, controller, size){
+        var dialog = $uibModal.open({
+            templateUrl: templateUrl,
+            backdrop: 'static',
+            size: (size? size : 'md'),
+            controller: controller});
+
+        return dialog.result;
+    };
+
+    return modal;
+}
+
+angular.module('example.utility')
+    .factory('modal', ['$uibModal', modalFactory]);
+},{}],5:[function(require,module,exports){
 function msgFactory($uibModal, setting){
     var msg = {};
     
@@ -216,11 +242,11 @@ function msgFactory($uibModal, setting){
             controller: ['$scope', '$uibModalInstance', 'args', function ($scope, $uibModalInstance, args) {
                 $scope.ok = function () {
                     $uibModalInstance.close(true);
-                }
+                };
 
                 $scope.cancel = function () {
                     $uibModalInstance.close(false);
-                }
+                };
 
                 $scope.model = args;
             }],
@@ -241,7 +267,7 @@ function msgFactory($uibModal, setting){
 
 angular.module('example.utility')
        .factory('msg', ['$uibModal', msgFactory]);
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);
@@ -287,7 +313,7 @@ function settingFactory() {
 
 angular.module('example.utility')
     .factory('setting', [settingFactory]);
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -310,14 +336,14 @@ angular.module('example', [
     'ui.bootstrap',
     'ui.grid'
 ]);
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 require('../../core');
 require('../../components/services/user');
 
-function loginController($scope, $location, userService) {
+function loginController($scope, $location, userService, $uibModalInstance) {
     $scope.login = function () {
         userService.login($scope.username, $scope.password)
             .then(function (result) {
@@ -332,7 +358,7 @@ function loginController($scope, $location, userService) {
 
 angular.module('example')
     .controller('loginController', ['$scope', '$location', 'userService', loginController]);
-},{"../../components/services/user":3,"../../core":6}],8:[function(require,module,exports){
+},{"../../components/services/user":3,"../../core":7}],9:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -352,7 +378,7 @@ function route($stateProvider, $urlRouterProvider) {
 }
 
 angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
-},{"../../core":6,"./loginController":7}],9:[function(require,module,exports){
+},{"../../core":7,"./loginController":8}],10:[function(require,module,exports){
 require('../../core');
 
 function aboutController($scope){
@@ -361,7 +387,7 @@ function aboutController($scope){
 
 angular.module('example')
 	   .controller('aboutController', ['$scope', aboutController]);
-},{"../../core":6}],10:[function(require,module,exports){
+},{"../../core":7}],11:[function(require,module,exports){
 require('../../core');
 require('../../components/utilities/msg');
 
@@ -371,7 +397,7 @@ function dashboardController($scope, msg){
 
 angular.module('example')
 	   .controller('dashboardController', ['$scope', 'msg', dashboardController]);
-},{"../../components/utilities/msg":4,"../../core":6}],11:[function(require,module,exports){
+},{"../../components/utilities/msg":5,"../../core":7}],12:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
@@ -390,7 +416,7 @@ function homeController($scope, menuService){
 
 angular.module('example')
     .controller('homeController', ['$scope', 'menuService', homeController])
-},{"../../components/services/menu":2,"../../components/utilities/msg":4,"../../core":6}],12:[function(require,module,exports){
+},{"../../components/services/menu":2,"../../components/utilities/msg":5,"../../core":7}],13:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -432,15 +458,16 @@ function route($stateProvider){
 
 angular.module('example')
     .config(['$stateProvider', route]);
-},{"../../core":6,"./aboutController":9,"./dashboardController":10,"./homeController":11}],13:[function(require,module,exports){
+},{"../../core":7,"./aboutController":10,"./dashboardController":11,"./homeController":12}],14:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */
 require('../../core');
 require('../../components/services/menu');
 require('../../components/services/user');
+require('../../components/utilities/modal');
 
-function frontendController($scope, menuService, userService) {
+function frontendController($scope, modal, menuService, userService) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -461,6 +488,10 @@ function frontendController($scope, menuService, userService) {
 
     $scope.menus = [];
 
+    $scope.login = function(){
+        modal.show('app/modules/account/login.html', 'loginController', 'login');
+    };
+
     $scope.logout = function(){
         userService.logout();
     };
@@ -472,8 +503,8 @@ function frontendController($scope, menuService, userService) {
 }
 
 angular.module('example')
-    .controller('frontendController', ['$scope', 'menuService', 'userService', frontendController]);
-},{"../../components/services/menu":2,"../../components/services/user":3,"../../core":6}],14:[function(require,module,exports){
+    .controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+},{"../../components/services/menu":2,"../../components/services/user":3,"../../components/utilities/modal":4,"../../core":7}],15:[function(require,module,exports){
 /**
  * Created by wowhy on 2015/11/16.
  */
@@ -495,7 +526,7 @@ function route($stateProvider, $urlRouterProvider) {
 
 angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":6,"./frontendController":13}],15:[function(require,module,exports){
+},{"../../core":7,"./frontendController":14}],16:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -520,7 +551,7 @@ function route($stateProvider) {
 }
 
 angular.module('example').config(['$stateProvider', route]);
-},{"../../core":6,"../admin/homeController":11,"./userController":16}],16:[function(require,module,exports){
+},{"../../core":7,"../admin/homeController":12,"./userController":17}],17:[function(require,module,exports){
 require('../../components/services/user');
 require('../../components/utilities/msg');
 
@@ -556,4 +587,4 @@ angular.module('example')
 		   }
 	   }])
 	   .controller('userController', ['$scope', 'userService', 'msg', userController]);
-},{"../../components/services/user":3,"../../components/utilities/msg":4}]},{},[1]);
+},{"../../components/services/user":3,"../../components/utilities/msg":5}]},{},[1]);

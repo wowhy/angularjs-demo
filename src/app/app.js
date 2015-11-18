@@ -9,7 +9,7 @@ require('./modules/admin/main');
 require('./modules/account/main');
 require('./modules/user/main');
 
-function run($rootScope, $state, setting) {
+function run($rootScope, $state, setting, $uibModalStack) {
     $rootScope.$state = $state;
     $rootScope.setting = setting;
 
@@ -24,7 +24,11 @@ function run($rootScope, $state, setting) {
                 }
             }
         });
+
+    $rootScope.$on('$stateChangeSuccess', function(){
+        $uibModalStack.dismissAll();
+    });
 }
 
 angular.module('example')
-    .run(['$rootScope', '$state', 'setting', run]);
+    .run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);

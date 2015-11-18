@@ -4,7 +4,7 @@
 require('../../core');
 require('../../components/services/user');
 
-function loginController($scope, $location, userService) {
+function loginController($scope, $location, userService, $uibModalInstance) {
     $scope.login = function () {
         userService.login($scope.username, $scope.password)
             .then(function (result) {

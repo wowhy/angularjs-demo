@@ -50,15 +50,19 @@ Header and header elements
 }
 
 /* FIX styles BEGIN */
-.page-header-fixed .header {
+.page-header-fixed .pre-header {
     position: fixed !important;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 99999;
+    z-index: 999; /* 小于模态窗口 */
 }
-body.page-header-fixed {
-    padding-top: 88px !important; /* height of the header */
+.page-header-fixed .header {
+    position: fixed !important;
+    top: 37px;
+    left: 0;
+    width: 100%;
+    z-index: 999;
 }
 /* FIX styles END */
 
@@ -366,4 +370,8 @@ body.page-header-fixed {
 
 .page-slider{
     margin-top: -23px;
+}
+
+.page-header-fixed .page-slider{
+    margin-top: 110px !important;
 }

@@ -4,8 +4,9 @@
 require('../../core');
 require('../../components/services/menu');
 require('../../components/services/user');
+require('../../components/utilities/modal');
 
-function frontendController($scope, menuService, userService) {
+function frontendController($scope, modal, menuService, userService) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -26,6 +27,10 @@ function frontendController($scope, menuService, userService) {
 
     $scope.menus = [];
 
+    $scope.login = function(){
+        modal.show('app/modules/account/login.html', 'loginController', 'login');
+    };
+
     $scope.logout = function(){
         userService.logout();
     };
@@ -37,4 +42,4 @@ function frontendController($scope, menuService, userService) {
 }
 
 angular.module('example')
-    .controller('frontendController', ['$scope', 'menuService', 'userService', frontendController]);
+    .controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);

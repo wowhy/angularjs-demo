@@ -15,11 +15,11 @@ function msgFactory($uibModal, setting){
             controller: ['$scope', '$uibModalInstance', 'args', function ($scope, $uibModalInstance, args) {
                 $scope.ok = function () {
                     $uibModalInstance.close(true);
-                }
+                };
 
                 $scope.cancel = function () {
                     $uibModalInstance.close(false);
-                }
+                };
 
                 $scope.model = args;
             }],

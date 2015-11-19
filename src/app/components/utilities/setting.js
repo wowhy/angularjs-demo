@@ -27,6 +27,10 @@ function settingFactory() {
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
 
+        layout: {
+            pageSidebarClosed: false
+        },
+
         setAuth: function (username) {
             this.isAuthenticated = !!username;
             this.username = username;

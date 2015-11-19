@@ -32,7 +32,54 @@ function run($rootScope, $state, setting, $uibModalStack) {
 }
 
 modules.root.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
-},{"./components/utilities/setting":7,"./core":8,"./modules/account/main":10,"./modules/admin/main":13,"./modules/frontend/main":15,"./modules/user/main":16}],2:[function(require,module,exports){
+},{"./components/utilities/setting":8,"./core":9,"./modules/account/main":11,"./modules/admin/main":14,"./modules/frontend/main":16,"./modules/user/main":17}],2:[function(require,module,exports){
+var modules = require('../../core');
+require('../utilities/setting');
+
+function uiPageSidebar() {
+    return {
+        link: function (scope, element/*, attrs*/) {
+        }
+    };
+}
+
+function uiPageSidebarMenu(setting) {
+    return {
+        link: function (scope, element, attrs) {
+            element.on('click', 'li > a', function (e) {
+                if (setting.layout.pageSidebarClosed) {
+                    return;
+                }
+
+                var sub = $(this).next();
+
+                if (!sub.hasClass('sub-menu')) {
+                    return;
+                }
+
+
+                var autoScroll = attrs.autoScroll;
+                var slideSpeed = parseInt(attrs.slideSpeed);
+
+                if (sub.is(":visible")) {
+                    $('.arrow', $(this)).removeClass("open");
+                    $(this).parent().removeClass("open");
+                    sub.slideUp();
+                } else {
+                    $('.arrow', $(this)).addClass("open");
+                    $(this).parent().addClass("open");
+                    sub.slideDown(slideSpeed);
+                }
+
+                e.preventDefault();
+            });
+        }
+    };
+}
+
+modules.directives.directive('uiPageSidebar', [uiPageSidebar]);
+modules.directives.directive('uiPageSidebarMenu', ['setting', uiPageSidebarMenu]);
+},{"../../core":9,"../utilities/setting":8}],3:[function(require,module,exports){
 var modules = require('../../core');
 
 function uiSpinnerBar($rootScope) {
@@ -62,13 +109,13 @@ function uiSpinnerBar($rootScope) {
 }
 
 modules.directives.directive('uiSpinnerBar', ['$rootScope', uiSpinnerBar]);
-},{"../../core":8}],3:[function(require,module,exports){
+},{"../../core":9}],4:[function(require,module,exports){
 var modules = require('../../core');
 
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', menus: [{name: '用户管理', url: '/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '/user'}]}
         ];
 
         var defer = $q.defer();
@@ -115,7 +162,7 @@ function menuService($http, $q) {
 }
 
 modules.services.service('menuService', ['$http', '$q', menuService]);
-},{"../../core":8}],4:[function(require,module,exports){
+},{"../../core":9}],5:[function(require,module,exports){
 var modules = require('../../core');
 require('../utilities/setting');
 
@@ -232,7 +279,7 @@ function userService($http, $q, setting) {
 }
 
 modules.services.service('userService', ['$http', '$q', 'setting', userService]);
-},{"../../core":8,"../utilities/setting":7}],5:[function(require,module,exports){
+},{"../../core":9,"../utilities/setting":8}],6:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/18.
  */
@@ -256,7 +303,7 @@ function modalFactory($uibModal, setting){
 }
 
 modules.utilities.factory('modal', ['$uibModal', modalFactory]);
-},{"../../core":8,"./setting":7}],6:[function(require,module,exports){
+},{"../../core":9,"./setting":8}],7:[function(require,module,exports){
 var modules = require('../../core');
 require('./setting');
 
@@ -301,7 +348,7 @@ function msgFactory($uibModal, setting){
 }
 
 modules.utilities.factory('msg', ['$uibModal', msgFactory]);
-},{"../../core":8,"./setting":7}],7:[function(require,module,exports){
+},{"../../core":9,"./setting":8}],8:[function(require,module,exports){
 var modules = require('../../core');
 
 function setCookie(name,value,hours){
@@ -331,6 +378,10 @@ function settingFactory() {
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
 
+        layout: {
+            pageSidebarClosed: false
+        },
+
         setAuth: function (username) {
             this.isAuthenticated = !!username;
             this.username = username;
@@ -348,7 +399,7 @@ function settingFactory() {
 }
 
 modules.utilities.factory('setting', [settingFactory]);
-},{"../../core":8}],8:[function(require,module,exports){
+},{"../../core":9}],9:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -377,7 +428,7 @@ modules.root = angular.module('example', [
 ]);
 
 module.exports = modules;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -398,7 +449,7 @@ function loginController($scope, $location, userService, $uibModalInstance) {
 }
 
 modules.root.controller('loginController', ['$scope', '$location', 'userService', loginController]);
-},{"../../components/services/user":4,"../../core":8}],10:[function(require,module,exports){
+},{"../../components/services/user":5,"../../core":9}],11:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -423,7 +474,7 @@ function route($stateProvider, $urlRouterProvider) {
 }
 
 modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
-},{"../../core":8,"./loginController":9}],11:[function(require,module,exports){
+},{"../../core":9,"./loginController":10}],12:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
@@ -431,6 +482,7 @@ var modules = require('../../core');
 require('../../components/utilities/msg');
 require('../../components/services/menu');
 require('../../components/directives/spinnerBar');
+require('../../components/directives/pageSidebar');
 
 function adminController($scope, menuService){
     $scope.menus = [];
@@ -442,16 +494,16 @@ function adminController($scope, menuService){
 }
 
 modules.root.controller('adminController', ['$scope', 'menuService', adminController])
-},{"../../components/directives/spinnerBar":2,"../../components/services/menu":3,"../../components/utilities/msg":6,"../../core":8}],12:[function(require,module,exports){
+},{"../../components/directives/pageSidebar":2,"../../components/directives/spinnerBar":3,"../../components/services/menu":4,"../../components/utilities/msg":7,"../../core":9}],13:[function(require,module,exports){
 var modules = require('../../core');
 require('../../components/utilities/msg');
 
 function dashboardController($scope, msg){
-    msg.confirm({text: 'Hello, Dashboard!'});
+    // msg.confirm({text: 'Hello, Dashboard!'});
 }
 
 modules.root.controller('dashboardController', ['$scope', 'msg', dashboardController]);
-},{"../../components/utilities/msg":6,"../../core":8}],13:[function(require,module,exports){
+},{"../../components/utilities/msg":7,"../../core":9}],14:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -491,7 +543,7 @@ function route($stateProvider){
 }
 
 modules.root.config(['$stateProvider', route]);
-},{"../../core":8,"./adminController":11,"./dashboardController":12}],14:[function(require,module,exports){
+},{"../../core":9,"./adminController":12,"./dashboardController":13}],15:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */
@@ -536,7 +588,7 @@ function frontendController($scope, modal, menuService, userService) {
 }
 
 modules.root.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
-},{"../../components/services/menu":3,"../../components/services/user":4,"../../components/utilities/modal":5,"../../core":8}],15:[function(require,module,exports){
+},{"../../components/services/menu":4,"../../components/services/user":5,"../../components/utilities/modal":6,"../../core":9}],16:[function(require,module,exports){
 /**
  * Created by wowhy on 2015/11/16.
  */
@@ -558,7 +610,7 @@ function route($stateProvider, $urlRouterProvider) {
 
 modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":8,"./frontendController":14}],16:[function(require,module,exports){
+},{"../../core":9,"./frontendController":15}],17:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -582,7 +634,7 @@ function route($stateProvider) {
 }
 
 modules.root.config(['$stateProvider', route]);
-},{"../../core":8,"./userController":17}],17:[function(require,module,exports){
+},{"../../core":9,"./userController":18}],18:[function(require,module,exports){
 var modules = require('../../core');
 
 require('../../components/services/user');
@@ -620,4 +672,4 @@ modules.root
 		   }
 	   }])
 	   .controller('userController', ['$scope', 'userService', 'msg', userController]);
-},{"../../components/services/user":4,"../../components/utilities/msg":6,"../../core":8}]},{},[1]);
+},{"../../components/services/user":5,"../../components/utilities/msg":7,"../../core":9}]},{},[1]);

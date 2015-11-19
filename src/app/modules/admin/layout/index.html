@@ -1,43 +1,40 @@
 <link href="assets/admin/layout/css/layout.css" rel="stylesheet" type="text/css"/>
 <link href="assets/admin/layout/css/themes/darkblue.css" rel="stylesheet" type="text/css" id="style_color"/>
 
-<div class="body m-page-on-load page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-quick-sidebar-over-content"
+<div class="page-on-load page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-quick-sidebar-over-content"
      ng-class="
         {
             'page-container-bg-solid': setting.layout.pageBodySolid,
             'page-sidebar-closed': setting.layout.pageSidebarClosed
         }">
 
-    <div ng-include="'app/templates/admin-header.html'"
-         class="page-header navbar navbar-fixed-top">
+    <div ui-spinner-bar class="page-spinner-bar">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+
+    <div class="page-header navbar navbar-fixed-top"
+         ng-include="'app/modules/admin/layout/header.html'">
     </div>
 
     <div class="clearfix">
     </div>
 
     <div class="page-container">
-        <div ng-include="'app/templates/sidebar.html'"
+        <div ng-include="'app/modules/admin/layout/sidebar.html'"
              class="page-sidebar-wrapper">
         </div>
 
         <div class="page-content-wrapper">
             <div class="page-content">
-                <div ng-include="'app/templates/theme-panel.html'"
-                     class="theme-panel hidden-xs hidden-sm">
-                </div>
-
                 <div ui-view="page" class="fade-in-up">
                 </div>
             </div>
         </div>
-
-        <a href="javascript:;" class="page-quick-sidebar-toggler"><i class="icon-close"></i></a>
-
-        <div ng-include="'tpl/quick-sidebar.html'"
-             class="page-quick-sidebar-wrapper"></div>
     </div>
 
-    <div ng-include="'app/templates/admin-footer.html'"
+    <div ng-include="'app/modules/admin/layout/footer.html'"
          class="page-footer">
     </div>
 </div>

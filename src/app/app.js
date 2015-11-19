@@ -2,7 +2,7 @@
  * Created by hongyuan on 2015/11/9.
  */
 
-require('./core');
+var modules = require('./core');
 require('./components/utilities/setting');
 require('./modules/frontend/main');
 require('./modules/admin/main');
@@ -30,5 +30,4 @@ function run($rootScope, $state, setting, $uibModalStack) {
     });
 }
 
-angular.module('example')
-    .run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+modules.root.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);

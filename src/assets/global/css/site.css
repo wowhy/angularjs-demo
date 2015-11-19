@@ -51,3 +51,7 @@ body {
 .modal-login {
     width: 480px;
 }
+
+.modal-dialog {
+    margin-top: 50px !important;
+}

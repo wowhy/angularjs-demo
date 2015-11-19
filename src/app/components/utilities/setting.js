@@ -1,3 +1,5 @@
+var modules = require('../../core');
+
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);
@@ -41,5 +43,4 @@ function settingFactory() {
     return setting;
 }
 
-angular.module('example.utility')
-    .factory('setting', [settingFactory]);
+modules.utilities.factory('setting', [settingFactory]);

@@ -3,7 +3,7 @@
  * Created by hongyuan on 2015/11/9.
  */
 
-require('./core');
+var modules = require('./core');
 require('./components/utilities/setting');
 require('./modules/frontend/main');
 require('./modules/admin/main');
@@ -31,9 +31,40 @@ function run($rootScope, $state, setting, $uibModalStack) {
     });
 }
 
-angular.module('example')
-    .run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
-},{"./components/utilities/setting":6,"./core":7,"./modules/account/main":9,"./modules/admin/main":13,"./modules/frontend/main":15,"./modules/user/main":16}],2:[function(require,module,exports){
+modules.root.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+},{"./components/utilities/setting":7,"./core":8,"./modules/account/main":10,"./modules/admin/main":13,"./modules/frontend/main":15,"./modules/user/main":16}],2:[function(require,module,exports){
+var modules = require('../../core');
+
+function uiSpinnerBar($rootScope) {
+    return {
+        link: function (scope, element/*, attrs*/) {
+            element.addClass('hide');
+            element.parent().removeClass('page-on-load');
+
+            $rootScope.$on('$stateChangeStart', function () {
+                element.removeClass('hide');
+            });
+
+            $rootScope.$on('$stateChangeSuccess', function () {
+                element.addClass('hide');
+                element.parent().removeClass('page-on-load');
+            });
+
+            $rootScope.$on('$stateNotFound', function () {
+                element.addClass('hide');
+            });
+
+            $rootScope.$on('$stateChangeError', function () {
+                element.addClass('hide');
+            });
+        }
+    };
+}
+
+modules.directives.directive('uiSpinnerBar', ['$rootScope', uiSpinnerBar]);
+},{"../../core":8}],3:[function(require,module,exports){
+var modules = require('../../core');
+
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
@@ -83,10 +114,10 @@ function menuService($http, $q) {
     };
 }
 
-angular.module('example.service')
-    .service('menuService', ['$http', '$q', menuService]);
-},{}],3:[function(require,module,exports){
-require('../utilities/setting')
+modules.services.service('menuService', ['$http', '$q', menuService]);
+},{"../../core":8}],4:[function(require,module,exports){
+var modules = require('../../core');
+require('../utilities/setting');
 
 function userService($http, $q, setting) {
     var me = this;
@@ -200,12 +231,14 @@ function userService($http, $q, setting) {
     }
 }
 
-angular.module('example.service')
-	   .service('userService', ['$http', '$q', 'setting', userService]);
-},{"../utilities/setting":6}],4:[function(require,module,exports){
+modules.services.service('userService', ['$http', '$q', 'setting', userService]);
+},{"../../core":8,"../utilities/setting":7}],5:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/18.
  */
+var modules = require('../../core');
+require('./setting');
+
 function modalFactory($uibModal, setting){
     var modal = {};
 
@@ -222,9 +255,11 @@ function modalFactory($uibModal, setting){
     return modal;
 }
 
-angular.module('example.utility')
-    .factory('modal', ['$uibModal', modalFactory]);
-},{}],5:[function(require,module,exports){
+modules.utilities.factory('modal', ['$uibModal', modalFactory]);
+},{"../../core":8,"./setting":7}],6:[function(require,module,exports){
+var modules = require('../../core');
+require('./setting');
+
 function msgFactory($uibModal, setting){
     var msg = {};
     
@@ -265,9 +300,10 @@ function msgFactory($uibModal, setting){
     return msg;
 }
 
-angular.module('example.utility')
-       .factory('msg', ['$uibModal', msgFactory]);
-},{}],6:[function(require,module,exports){
+modules.utilities.factory('msg', ['$uibModal', msgFactory]);
+},{"../../core":8,"./setting":7}],7:[function(require,module,exports){
+var modules = require('../../core');
+
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);
@@ -311,9 +347,8 @@ function settingFactory() {
     return setting;
 }
 
-angular.module('example.utility')
-    .factory('setting', [settingFactory]);
-},{}],7:[function(require,module,exports){
+modules.utilities.factory('setting', [settingFactory]);
+},{"../../core":8}],8:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -324,9 +359,14 @@ angular.module('example.utility')
 // require('../libs/angular-bootstrap/ui-bootstrap-tpls');
 // require('../libs/angular-ui-grid/ui-grid');
 
-angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
-angular.module('example.service', ['example.utility']);
-angular.module('example', [
+var modules = {
+};
+
+modules.utilities = angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
+modules.services = angular.module('example.service', ['example.utility']);
+modules.directives = angular.module('example.directive', ['example.utility']);
+modules.root = angular.module('example', [
+    'example.directive',
     'example.service',
     'example.utility',
     'ngLocale',
@@ -335,11 +375,13 @@ angular.module('example', [
     'ui.router',
     'ui.bootstrap'
 ]);
-},{}],8:[function(require,module,exports){
+
+module.exports = modules;
+},{}],9:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/user');
 
 function loginController($scope, $location, userService, $uibModalInstance) {
@@ -355,14 +397,13 @@ function loginController($scope, $location, userService, $uibModalInstance) {
     }
 }
 
-angular.module('example')
-    .controller('loginController', ['$scope', '$location', 'userService', loginController]);
-},{"../../components/services/user":3,"../../core":7}],9:[function(require,module,exports){
+modules.root.controller('loginController', ['$scope', '$location', 'userService', loginController]);
+},{"../../components/services/user":4,"../../core":8}],10:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
+var modules = require('../../core');
 require('./loginController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -381,35 +422,17 @@ function route($stateProvider, $urlRouterProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
-},{"../../core":7,"./loginController":8}],10:[function(require,module,exports){
-require('../../core');
-
-function aboutController($scope){
-	console.log('about');
-}
-
-angular.module('example')
-	   .controller('aboutController', ['$scope', aboutController]);
-},{"../../core":7}],11:[function(require,module,exports){
-require('../../core');
-require('../../components/utilities/msg');
-
-function dashboardController($scope, msg){
-    msg.confirm({text: 'Hello, Dashboard!'});
-}
-
-angular.module('example')
-	   .controller('dashboardController', ['$scope', 'msg', dashboardController]);
-},{"../../components/utilities/msg":5,"../../core":7}],12:[function(require,module,exports){
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
+},{"../../core":8,"./loginController":9}],11:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/utilities/msg');
 require('../../components/services/menu');
+require('../../components/directives/spinnerBar');
 
-function homeController($scope, menuService){
+function adminController($scope, menuService){
     $scope.menus = [];
 
     menuService.authorizationMenus()
@@ -418,19 +441,26 @@ function homeController($scope, menuService){
         });
 }
 
-angular.module('example')
-    .controller('homeController', ['$scope', 'menuService', homeController])
-},{"../../components/services/menu":2,"../../components/utilities/msg":5,"../../core":7}],13:[function(require,module,exports){
+modules.root.controller('adminController', ['$scope', 'menuService', adminController])
+},{"../../components/directives/spinnerBar":2,"../../components/services/menu":3,"../../components/utilities/msg":6,"../../core":8}],12:[function(require,module,exports){
+var modules = require('../../core');
+require('../../components/utilities/msg');
+
+function dashboardController($scope, msg){
+    msg.confirm({text: 'Hello, Dashboard!'});
+}
+
+modules.root.controller('dashboardController', ['$scope', 'msg', dashboardController]);
+},{"../../components/utilities/msg":6,"../../core":8}],13:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
 // 引用依赖模块，配置路由
 
-require('../../core');
-require('./homeController');
+var modules = require('../../core');
+require('./adminController');
 require('./dashboardController');
-require('./aboutController');
 
 function route($stateProvider){
     $stateProvider
@@ -445,7 +475,7 @@ function route($stateProvider){
         })
         .state('admin', {
             templateUrl: 'app/modules/admin/layout/index.html',
-            controller: 'homeController'
+            controller: 'adminController'
         })
         .state('admin.dashboard', {
             url: '/dashboard',
@@ -460,13 +490,12 @@ function route($stateProvider){
     ;
 }
 
-angular.module('example')
-    .config(['$stateProvider', route]);
-},{"../../core":7,"./aboutController":10,"./dashboardController":11,"./homeController":12}],14:[function(require,module,exports){
+modules.root.config(['$stateProvider', route]);
+},{"../../core":8,"./adminController":11,"./dashboardController":12}],14:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/menu');
 require('../../components/services/user');
 require('../../components/utilities/modal');
@@ -506,13 +535,12 @@ function frontendController($scope, modal, menuService, userService) {
         });
 }
 
-angular.module('example')
-    .controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
-},{"../../components/services/menu":2,"../../components/services/user":3,"../../components/utilities/modal":4,"../../core":7}],15:[function(require,module,exports){
+modules.root.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+},{"../../components/services/menu":3,"../../components/services/user":4,"../../components/utilities/modal":5,"../../core":8}],15:[function(require,module,exports){
 /**
  * Created by wowhy on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('./frontendController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -521,22 +549,21 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
-            templateUrl: 'app/modules/frontend/index.html',
+            templateUrl: 'app/modules/frontend/layout/index.html',
             data: { pageTitle: '主页', pageSubTitle: ''},
             controller: 'frontendController'
         })
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":7,"./frontendController":14}],16:[function(require,module,exports){
+},{"../../core":8,"./frontendController":14}],16:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
-require('../admin/homeController');
+var modules = require('../../core');
 require('./userController');
 
 function route($stateProvider) {
@@ -545,7 +572,7 @@ function route($stateProvider) {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
             views: {
-                'page': {
+                'page@admin': {
                     templateUrl: 'app/modules/user/user-list.html',
                     controller: 'userController'
                 }
@@ -554,8 +581,10 @@ function route($stateProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', route]);
-},{"../../core":7,"../admin/homeController":12,"./userController":17}],17:[function(require,module,exports){
+modules.root.config(['$stateProvider', route]);
+},{"../../core":8,"./userController":17}],17:[function(require,module,exports){
+var modules = require('../../core');
+
 require('../../components/services/user');
 require('../../components/utilities/msg');
 
@@ -578,7 +607,7 @@ function userController($scope, userService, msg) {
 			   });
 }
 
-angular.module('example')
+modules.root
 	   .filter('userStatus', [function() {
 		   return function(value) {
 			   switch(value){
@@ -591,4 +620,4 @@ angular.module('example')
 		   }
 	   }])
 	   .controller('userController', ['$scope', 'userService', 'msg', userController]);
-},{"../../components/services/user":3,"../../components/utilities/msg":5}]},{},[1]);
+},{"../../components/services/user":4,"../../components/utilities/msg":6,"../../core":8}]},{},[1]);

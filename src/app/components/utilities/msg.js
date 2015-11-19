@@ -1,3 +1,6 @@
+var modules = require('../../core');
+require('./setting');
+
 function msgFactory($uibModal, setting){
     var msg = {};
     
@@ -38,5 +41,4 @@ function msgFactory($uibModal, setting){
     return msg;
 }
 
-angular.module('example.utility')
-       .factory('msg', ['$uibModal', msgFactory]);
+modules.utilities.factory('msg', ['$uibModal', msgFactory]);

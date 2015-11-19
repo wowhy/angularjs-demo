@@ -1,4 +1,5 @@
-require('../utilities/setting')
+var modules = require('../../core');
+require('../utilities/setting');
 
 function userService($http, $q, setting) {
     var me = this;
@@ -112,5 +113,4 @@ function userService($http, $q, setting) {
     }
 }
 
-angular.module('example.service')
-	   .service('userService', ['$http', '$q', 'setting', userService]);
+modules.services.service('userService', ['$http', '$q', 'setting', userService]);

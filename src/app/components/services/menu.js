@@ -1,3 +1,5 @@
+var modules = require('../../core');
+
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
@@ -47,5 +49,4 @@ function menuService($http, $q) {
     };
 }
 
-angular.module('example.service')
-    .service('menuService', ['$http', '$q', menuService]);
+modules.services.service('menuService', ['$http', '$q', menuService]);

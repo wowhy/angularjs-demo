@@ -4,10 +4,9 @@
 
 // 引用依赖模块，配置路由
 
-require('../../core');
-require('./homeController');
+var modules = require('../../core');
+require('./adminController');
 require('./dashboardController');
-require('./aboutController');
 
 function route($stateProvider){
     $stateProvider
@@ -22,7 +21,7 @@ function route($stateProvider){
         })
         .state('admin', {
             templateUrl: 'app/modules/admin/layout/index.html',
-            controller: 'homeController'
+            controller: 'adminController'
         })
         .state('admin.dashboard', {
             url: '/dashboard',
@@ -37,5 +36,4 @@ function route($stateProvider){
     ;
 }
 
-angular.module('example')
-    .config(['$stateProvider', route]);
+modules.root.config(['$stateProvider', route]);

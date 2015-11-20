@@ -19,7 +19,7 @@ function run($rootScope, $state, setting, $uibModalStack) {
                 if (!setting.isAuthenticated) {
                     event.preventDefault();
                     setTimeout(function () {
-                        $state.go('login', {}, {});
+                        $state.go('frontend', {}, {});
                     }, 0);
                 }
             }

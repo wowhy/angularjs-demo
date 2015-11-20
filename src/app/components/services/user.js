@@ -110,6 +110,10 @@ function userService($http, $q, setting) {
 
     this.logout = function () {
         setting.setAuth('');
+
+        var defer = $q.defer();
+        defer.resolve();
+        return defer.promise;
     }
 }
 

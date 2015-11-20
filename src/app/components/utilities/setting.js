@@ -28,6 +28,7 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
+            adminLayout: 'layout',
             pageSidebarClosed: false
         },
 
@@ -42,6 +43,10 @@ function settingFactory() {
     var username = getCookie('username');
     if(username){
         setting.setAuth(username);
+    }
+
+    if(Math.round(Math.random() * 10) > 5){
+        setting.layout.adminLayout = 'layout3';
     }
 
     return setting;

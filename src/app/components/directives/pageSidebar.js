@@ -22,8 +22,6 @@ function uiPageSidebarMenu(setting) {
                     return;
                 }
 
-
-                var autoScroll = attrs.autoScroll;
                 var slideSpeed = parseInt(attrs.slideSpeed);
 
                 if (sub.is(":visible")) {

@@ -20,7 +20,7 @@ function run($rootScope, $state, setting, $uibModalStack) {
                 if (!setting.isAuthenticated) {
                     event.preventDefault();
                     setTimeout(function () {
-                        $state.go('login', {}, {});
+                        $state.go('frontend', {}, {});
                     }, 0);
                 }
             }
@@ -57,8 +57,6 @@ function uiPageSidebarMenu(setting) {
                     return;
                 }
 
-
-                var autoScroll = attrs.autoScroll;
                 var slideSpeed = parseInt(attrs.slideSpeed);
 
                 if (sub.is(":visible")) {
@@ -115,7 +113,7 @@ var modules = require('../../core');
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]}
         ];
 
         var defer = $q.defer();
@@ -275,6 +273,10 @@ function userService($http, $q, setting) {
 
     this.logout = function () {
         setting.setAuth('');
+
+        var defer = $q.defer();
+        defer.resolve();
+        return defer.promise;
     }
 }
 
@@ -379,6 +381,7 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
+            adminLayout: 'layout',
             pageSidebarClosed: false
         },
 
@@ -393,6 +396,10 @@ function settingFactory() {
     var username = getCookie('username');
     if(username){
         setting.setAuth(username);
+    }
+
+    if(Math.round(Math.random() * 10) > 5){
+        setting.layout.adminLayout = 'layout3';
     }
 
     return setting;
@@ -484,16 +491,34 @@ require('../../components/services/menu');
 require('../../components/directives/spinnerBar');
 require('../../components/directives/pageSidebar');
 
-function adminController($scope, menuService){
+function adminController($scope){
+}
+
+function headerController($scope, $location, userService, setting){
+    $scope.toggleSidebar = function(){
+        setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
+    };
+
+    $scope.logout = function(){
+        userService.logout().then(function(){
+            $location.path('/');
+        });
+    }
+}
+
+function navbarController($scope, menuService) {
     $scope.menus = [];
 
     menuService.authorizationMenus()
-        .then(function(menus){
+        .then(function (menus) {
             $scope.menus = menus;
         });
 }
 
-modules.root.controller('adminController', ['$scope', 'menuService', adminController])
+modules.root
+    .controller('adminController', ['$scope', adminController])
+    .controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+    .controller('navbarController', ['$scope', 'menuService', navbarController]);
 },{"../../components/directives/pageSidebar":2,"../../components/directives/spinnerBar":3,"../../components/services/menu":4,"../../components/utilities/msg":7,"../../core":9}],13:[function(require,module,exports){
 var modules = require('../../core');
 require('../../components/utilities/msg');
@@ -511,10 +536,11 @@ modules.root.controller('dashboardController', ['$scope', 'msg', dashboardContro
 // 引用依赖模块，配置路由
 
 var modules = require('../../core');
+require('../../components/utilities/setting');
 require('./adminController');
 require('./dashboardController');
 
-function route($stateProvider){
+function route($stateProvider) {
     $stateProvider
         .state('404', {
             url: '/404',
@@ -526,7 +552,14 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/layout/index.html',
+            //templateUrl: 'app/modules/admin/layout/index.html',
+            templateProvider: ['$http', '$templateCache', 'setting', function ($http, $templateCache, setting) {
+                var url = 'app/modules/admin/' + setting.layout.adminLayout + '/index.html';
+                return $http.get(url, {cache: $templateCache})
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }],
             controller: 'adminController'
         })
         .state('admin.dashboard', {
@@ -537,13 +570,13 @@ function route($stateProvider){
                     controller: 'dashboardController'
                 }
             },
-            data: { pageTitle: '仪表板', pageSubTitle: '统计&报表' }
+            data: {pageTitle: '仪表板', pageSubTitle: '统计&报表'}
         })
     ;
 }
 
 modules.root.config(['$stateProvider', route]);
-},{"../../core":9,"./adminController":12,"./dashboardController":13}],15:[function(require,module,exports){
+},{"../../components/utilities/setting":8,"../../core":9,"./adminController":12,"./dashboardController":13}],15:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */

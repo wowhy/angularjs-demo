@@ -1,12 +1,14 @@
-<div class="page-header-inner">
+<div class="page-header-inner"
+     ng-controller="headerController">
     <!-- LOGO -->
     <div class="page-logo">
-        <a href="#/dashboard">
+        <a href="#/">
             <img src="assets/admin/layout/img/logo.png" alt="logo" class="logo-default"/>
         </a>
 
         <!-- 侧边栏按钮 -->
-        <div class="menu-toggler sidebar-toggler">
+        <div class="menu-toggler sidebar-toggler"
+             ng-click="toggleSidebar()">
         </div>
     </div>
 
@@ -35,13 +37,13 @@
                             <!--<i class="icon-lock"></i>锁定</a>-->
                     <!--</li>-->
                     <li>
-                        <a href="#/">
+                        <a ng-click="logout()">
                             <i class="icon-logout"></i>退出</a>
                     </li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#/" class="dropdown-toggle">
+                <a ng-click="logout()" class="dropdown-toggle">
                     <i class="icon-logout"></i>
                 </a>
             </li>

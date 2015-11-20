@@ -1,3 +1,5 @@
+var modules = require('../../core');
+
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);
@@ -21,9 +23,14 @@ function removeCookie(name){
 
 function settingFactory() {
     var setting = {
-        applicationName: '',
+        applicationName: '报表管理系统',
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
+
+        layout: {
+            adminLayout: 'layout',
+            pageSidebarClosed: false
+        },
 
         setAuth: function (username) {
             this.isAuthenticated = !!username;
@@ -38,8 +45,11 @@ function settingFactory() {
         setting.setAuth(username);
     }
 
+    if(Math.round(Math.random() * 10) > 5){
+        setting.layout.adminLayout = 'layout3';
+    }
+
     return setting;
 }
 
-angular.module('example.utility')
-    .factory('setting', [settingFactory]);
+modules.utilities.factory('setting', [settingFactory]);

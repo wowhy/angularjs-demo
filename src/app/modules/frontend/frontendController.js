@@ -1,7 +1,7 @@
 /**
  * Created by hongyuan on 2015/11/17.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/menu');
 require('../../components/services/user');
 require('../../components/utilities/modal');
@@ -41,5 +41,4 @@ function frontendController($scope, modal, menuService, userService) {
         });
 }
 
-angular.module('example')
-    .controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+modules.root.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);

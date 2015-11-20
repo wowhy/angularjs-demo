@@ -4,12 +4,12 @@
 
 // 引用依赖模块，配置路由
 
-require('../../core');
-require('./homeController');
+var modules = require('../../core');
+require('../../components/utilities/setting');
+require('./adminController');
 require('./dashboardController');
-require('./aboutController');
 
-function route($stateProvider){
+function route($stateProvider) {
     $stateProvider
         .state('404', {
             url: '/404',
@@ -21,8 +21,15 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/theme1/index.html',
-            controller: 'homeController'
+            //templateUrl: 'app/modules/admin/layout/index.html',
+            templateProvider: ['$http', '$templateCache', 'setting', function ($http, $templateCache, setting) {
+                var url = 'app/modules/admin/' + setting.layout.adminLayout + '/index.html';
+                return $http.get(url, {cache: $templateCache})
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }],
+            controller: 'adminController'
         })
         .state('admin.dashboard', {
             url: '/dashboard',
@@ -32,10 +39,9 @@ function route($stateProvider){
                     controller: 'dashboardController'
                 }
             },
-            data: { pageTitle: '仪表板', pageSubTitle: '统计&报表' }
+            data: {pageTitle: '仪表板', pageSubTitle: '统计&报表'}
         })
     ;
 }
 
-angular.module('example')
-    .config(['$stateProvider', route]);
+modules.root.config(['$stateProvider', route]);

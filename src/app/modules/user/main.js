@@ -2,8 +2,7 @@
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
-require('../admin/homeController');
+var modules = require('../../core');
 require('./userController');
 
 function route($stateProvider) {
@@ -12,7 +11,7 @@ function route($stateProvider) {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
             views: {
-                'page': {
+                'page@admin': {
                     templateUrl: 'app/modules/user/user-list.html',
                     controller: 'userController'
                 }
@@ -21,4 +20,4 @@ function route($stateProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', route]);
+modules.root.config(['$stateProvider', route]);

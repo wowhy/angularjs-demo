@@ -1,6 +1,9 @@
 /**
  * Created by hongyuan on 2015/11/18.
  */
+var modules = require('../../core');
+require('./setting');
+
 function modalFactory($uibModal, setting){
     var modal = {};
 
@@ -17,5 +20,4 @@ function modalFactory($uibModal, setting){
     return modal;
 }
 
-angular.module('example.utility')
-    .factory('modal', ['$uibModal', modalFactory]);
+modules.utilities.factory('modal', ['$uibModal', modalFactory]);

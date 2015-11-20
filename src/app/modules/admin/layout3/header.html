@@ -1,0 +1,55 @@
+<div class="page-header-top" ng-controller="headerController">
+    <div class="container">
+        <div class="page-logo">
+            <a href="#/"><img src="assets/admin/layout3/img/logo-default.png" alt="logo" class="logo-default"></a>
+        </div>
+
+        <a href="javascript:;" class="menu-toggler"></a>
+
+        <div class="top-menu">
+            <ul class="nav navbar-nav pull-right">
+                <li uib-dropdown class="dropdown dropdown-user dropdown-dark">
+                    <a uib-dropdown-toggle class="dropdown-toggle">
+                        <img alt="" class="img-circle" src="assets/admin/layout3/img/avatar9.jpg">
+                        <span class="username username-hide-mobile" ng-bind="setting.username"></span>
+                    </a>
+                    <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-default">
+                        <li>
+                            <a ng-click="logout()">
+                                <i class="icon-key"></i> 退出 </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="page-header-menu" ng-controller="navbarController">
+    <div class="container">
+        <div class="hor-menu">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="#/dashboard">
+                        <i class="icon-home"></i>
+                        <span class="title">仪表板</span>
+                    </a>
+                </li>
+                <li uib-dropdown class="menu-dropdown" ng-repeat="nav in menus">
+                    <a uib-dropdown-toggle ng-href="{{nav.url}}">
+                        <i class="{{nav.icon}}"></i>
+                        <span class="title" ng-bind="nav.name"></span>
+                    </a>
+                    <ul uib-dropdown-menu ng-if="nav.menus && nav.menus.length > 0"
+                        class="sub-menu">
+                        <li ng-repeat="menu in nav.menus">
+                            <a ng-href="{{menu.url}}">
+                                <i class="{{menu.icon}}"></i><span ng-bind="menu.name"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

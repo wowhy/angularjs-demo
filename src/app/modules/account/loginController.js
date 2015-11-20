@@ -1,7 +1,7 @@
 /**
  * Created by hongyuan on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/user');
 
 function loginController($scope, $location, userService, $uibModalInstance) {
@@ -17,5 +17,4 @@ function loginController($scope, $location, userService, $uibModalInstance) {
     }
 }
 
-angular.module('example')
-    .controller('loginController', ['$scope', '$location', 'userService', loginController]);
+modules.root.controller('loginController', ['$scope', '$location', 'userService', loginController]);

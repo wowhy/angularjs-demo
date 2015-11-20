@@ -1,3 +1,5 @@
+var modules = require('../../core');
+
 require('../../components/services/user');
 require('../../components/utilities/msg');
 
@@ -20,7 +22,7 @@ function userController($scope, userService, msg) {
 			   });
 }
 
-angular.module('example')
+modules.root
 	   .filter('userStatus', [function() {
 		   return function(value) {
 			   switch(value){

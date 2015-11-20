@@ -3,7 +3,7 @@
  * Created by hongyuan on 2015/11/9.
  */
 
-require('./core');
+var modules = require('./core');
 require('./components/utilities/setting');
 require('./modules/frontend/main');
 require('./modules/admin/main');
@@ -20,7 +20,7 @@ function run($rootScope, $state, setting, $uibModalStack) {
                 if (!setting.isAuthenticated) {
                     event.preventDefault();
                     setTimeout(function () {
-                        $state.go('login', {}, {});
+                        $state.go('frontend', {}, {});
                     }, 0);
                 }
             }
@@ -31,13 +31,89 @@ function run($rootScope, $state, setting, $uibModalStack) {
     });
 }
 
-angular.module('example')
-    .run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
-},{"./components/utilities/setting":6,"./core":7,"./modules/account/main":9,"./modules/admin/main":13,"./modules/frontend/main":15,"./modules/user/main":16}],2:[function(require,module,exports){
+modules.root.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+},{"./components/utilities/setting":8,"./core":9,"./modules/account/main":11,"./modules/admin/main":14,"./modules/frontend/main":16,"./modules/user/main":17}],2:[function(require,module,exports){
+var modules = require('../../core');
+require('../utilities/setting');
+
+function uiPageSidebar() {
+    return {
+        link: function (scope, element/*, attrs*/) {
+        }
+    };
+}
+
+function uiPageSidebarMenu(setting) {
+    return {
+        link: function (scope, element, attrs) {
+            element.on('click', 'li > a', function (e) {
+                if (setting.layout.pageSidebarClosed) {
+                    return;
+                }
+
+                var sub = $(this).next();
+
+                if (!sub.hasClass('sub-menu')) {
+                    return;
+                }
+
+                var slideSpeed = parseInt(attrs.slideSpeed);
+
+                if (sub.is(":visible")) {
+                    $('.arrow', $(this)).removeClass("open");
+                    $(this).parent().removeClass("open");
+                    sub.slideUp();
+                } else {
+                    $('.arrow', $(this)).addClass("open");
+                    $(this).parent().addClass("open");
+                    sub.slideDown(slideSpeed);
+                }
+
+                e.preventDefault();
+            });
+        }
+    };
+}
+
+modules.directives.directive('uiPageSidebar', [uiPageSidebar]);
+modules.directives.directive('uiPageSidebarMenu', ['setting', uiPageSidebarMenu]);
+},{"../../core":9,"../utilities/setting":8}],3:[function(require,module,exports){
+var modules = require('../../core');
+
+function uiSpinnerBar($rootScope) {
+    return {
+        link: function (scope, element/*, attrs*/) {
+            element.addClass('hide');
+            element.parent().removeClass('page-on-load');
+
+            $rootScope.$on('$stateChangeStart', function () {
+                element.removeClass('hide');
+            });
+
+            $rootScope.$on('$stateChangeSuccess', function () {
+                element.addClass('hide');
+                element.parent().removeClass('page-on-load');
+            });
+
+            $rootScope.$on('$stateNotFound', function () {
+                element.addClass('hide');
+            });
+
+            $rootScope.$on('$stateChangeError', function () {
+                element.addClass('hide');
+            });
+        }
+    };
+}
+
+modules.directives.directive('uiSpinnerBar', ['$rootScope', uiSpinnerBar]);
+},{"../../core":9}],4:[function(require,module,exports){
+var modules = require('../../core');
+
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', menus: [{name: '用户管理', url: '/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]}
         ];
 
         var defer = $q.defer();
@@ -83,10 +159,10 @@ function menuService($http, $q) {
     };
 }
 
-angular.module('example.service')
-    .service('menuService', ['$http', '$q', menuService]);
-},{}],3:[function(require,module,exports){
-require('../utilities/setting')
+modules.services.service('menuService', ['$http', '$q', menuService]);
+},{"../../core":9}],5:[function(require,module,exports){
+var modules = require('../../core');
+require('../utilities/setting');
 
 function userService($http, $q, setting) {
     var me = this;
@@ -197,15 +273,21 @@ function userService($http, $q, setting) {
 
     this.logout = function () {
         setting.setAuth('');
+
+        var defer = $q.defer();
+        defer.resolve();
+        return defer.promise;
     }
 }
 
-angular.module('example.service')
-	   .service('userService', ['$http', '$q', 'setting', userService]);
-},{"../utilities/setting":6}],4:[function(require,module,exports){
+modules.services.service('userService', ['$http', '$q', 'setting', userService]);
+},{"../../core":9,"../utilities/setting":8}],6:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/18.
  */
+var modules = require('../../core');
+require('./setting');
+
 function modalFactory($uibModal, setting){
     var modal = {};
 
@@ -222,9 +304,11 @@ function modalFactory($uibModal, setting){
     return modal;
 }
 
-angular.module('example.utility')
-    .factory('modal', ['$uibModal', modalFactory]);
-},{}],5:[function(require,module,exports){
+modules.utilities.factory('modal', ['$uibModal', modalFactory]);
+},{"../../core":9,"./setting":8}],7:[function(require,module,exports){
+var modules = require('../../core');
+require('./setting');
+
 function msgFactory($uibModal, setting){
     var msg = {};
     
@@ -265,9 +349,10 @@ function msgFactory($uibModal, setting){
     return msg;
 }
 
-angular.module('example.utility')
-       .factory('msg', ['$uibModal', msgFactory]);
-},{}],6:[function(require,module,exports){
+modules.utilities.factory('msg', ['$uibModal', msgFactory]);
+},{"../../core":9,"./setting":8}],8:[function(require,module,exports){
+var modules = require('../../core');
+
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);
@@ -291,9 +376,14 @@ function removeCookie(name){
 
 function settingFactory() {
     var setting = {
-        applicationName: '',
+        applicationName: '报表管理系统',
         tel: '0411-88888888',
         email: 'wowhy@outlook.com',
+
+        layout: {
+            adminLayout: 'layout',
+            pageSidebarClosed: false
+        },
 
         setAuth: function (username) {
             this.isAuthenticated = !!username;
@@ -308,12 +398,15 @@ function settingFactory() {
         setting.setAuth(username);
     }
 
+    if(Math.round(Math.random() * 10) > 5){
+        setting.layout.adminLayout = 'layout3';
+    }
+
     return setting;
 }
 
-angular.module('example.utility')
-    .factory('setting', [settingFactory]);
-},{}],7:[function(require,module,exports){
+modules.utilities.factory('setting', [settingFactory]);
+},{"../../core":9}],9:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -324,9 +417,14 @@ angular.module('example.utility')
 // require('../libs/angular-bootstrap/ui-bootstrap-tpls');
 // require('../libs/angular-ui-grid/ui-grid');
 
-angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
-angular.module('example.service', ['example.utility']);
-angular.module('example', [
+var modules = {
+};
+
+modules.utilities = angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
+modules.services = angular.module('example.service', ['example.utility']);
+modules.directives = angular.module('example.directive', ['example.utility']);
+modules.root = angular.module('example', [
+    'example.directive',
     'example.service',
     'example.utility',
     'ngLocale',
@@ -335,11 +433,13 @@ angular.module('example', [
     'ui.router',
     'ui.bootstrap'
 ]);
-},{}],8:[function(require,module,exports){
+
+module.exports = modules;
+},{}],10:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/user');
 
 function loginController($scope, $location, userService, $uibModalInstance) {
@@ -355,14 +455,13 @@ function loginController($scope, $location, userService, $uibModalInstance) {
     }
 }
 
-angular.module('example')
-    .controller('loginController', ['$scope', '$location', 'userService', loginController]);
-},{"../../components/services/user":3,"../../core":7}],9:[function(require,module,exports){
+modules.root.controller('loginController', ['$scope', '$location', 'userService', loginController]);
+},{"../../components/services/user":5,"../../core":9}],11:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
+var modules = require('../../core');
 require('./loginController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -381,58 +480,67 @@ function route($stateProvider, $urlRouterProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
-},{"../../core":7,"./loginController":8}],10:[function(require,module,exports){
-require('../../core');
-
-function aboutController($scope){
-	console.log('about');
-}
-
-angular.module('example')
-	   .controller('aboutController', ['$scope', aboutController]);
-},{"../../core":7}],11:[function(require,module,exports){
-require('../../core');
-require('../../components/utilities/msg');
-
-function dashboardController($scope, msg){
-    msg.confirm({text: 'Hello, Dashboard!'});
-}
-
-angular.module('example')
-	   .controller('dashboardController', ['$scope', 'msg', dashboardController]);
-},{"../../components/utilities/msg":5,"../../core":7}],12:[function(require,module,exports){
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
+},{"../../core":9,"./loginController":10}],12:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/utilities/msg');
 require('../../components/services/menu');
+require('../../components/directives/spinnerBar');
+require('../../components/directives/pageSidebar');
 
-function homeController($scope, menuService){
+function adminController($scope){
+}
+
+function headerController($scope, $location, userService, setting){
+    $scope.toggleSidebar = function(){
+        setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
+    };
+
+    $scope.logout = function(){
+        userService.logout().then(function(){
+            $location.path('/');
+        });
+    }
+}
+
+function navbarController($scope, menuService) {
     $scope.menus = [];
 
     menuService.authorizationMenus()
-        .then(function(menus){
+        .then(function (menus) {
             $scope.menus = menus;
         });
 }
 
-angular.module('example')
-    .controller('homeController', ['$scope', 'menuService', homeController])
-},{"../../components/services/menu":2,"../../components/utilities/msg":5,"../../core":7}],13:[function(require,module,exports){
+modules.root
+    .controller('adminController', ['$scope', adminController])
+    .controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+    .controller('navbarController', ['$scope', 'menuService', navbarController]);
+},{"../../components/directives/pageSidebar":2,"../../components/directives/spinnerBar":3,"../../components/services/menu":4,"../../components/utilities/msg":7,"../../core":9}],13:[function(require,module,exports){
+var modules = require('../../core');
+require('../../components/utilities/msg');
+
+function dashboardController($scope, msg){
+    // msg.confirm({text: 'Hello, Dashboard!'});
+}
+
+modules.root.controller('dashboardController', ['$scope', 'msg', dashboardController]);
+},{"../../components/utilities/msg":7,"../../core":9}],14:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
 // 引用依赖模块，配置路由
 
-require('../../core');
-require('./homeController');
+var modules = require('../../core');
+require('../../components/utilities/setting');
+require('./adminController');
 require('./dashboardController');
-require('./aboutController');
 
-function route($stateProvider){
+function route($stateProvider) {
     $stateProvider
         .state('404', {
             url: '/404',
@@ -444,8 +552,15 @@ function route($stateProvider){
             controller: 'aboutController'
         })
         .state('admin', {
-            templateUrl: 'app/modules/admin/theme1/index.html',
-            controller: 'homeController'
+            //templateUrl: 'app/modules/admin/layout/index.html',
+            templateProvider: ['$http', '$templateCache', 'setting', function ($http, $templateCache, setting) {
+                var url = 'app/modules/admin/' + setting.layout.adminLayout + '/index.html';
+                return $http.get(url, {cache: $templateCache})
+                    .then(function (response) {
+                        return response.data;
+                    });
+            }],
+            controller: 'adminController'
         })
         .state('admin.dashboard', {
             url: '/dashboard',
@@ -455,18 +570,17 @@ function route($stateProvider){
                     controller: 'dashboardController'
                 }
             },
-            data: { pageTitle: '仪表板', pageSubTitle: '统计&报表' }
+            data: {pageTitle: '仪表板', pageSubTitle: '统计&报表'}
         })
     ;
 }
 
-angular.module('example')
-    .config(['$stateProvider', route]);
-},{"../../core":7,"./aboutController":10,"./dashboardController":11,"./homeController":12}],14:[function(require,module,exports){
+modules.root.config(['$stateProvider', route]);
+},{"../../components/utilities/setting":8,"../../core":9,"./adminController":12,"./dashboardController":13}],15:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */
-require('../../core');
+var modules = require('../../core');
 require('../../components/services/menu');
 require('../../components/services/user');
 require('../../components/utilities/modal');
@@ -506,13 +620,12 @@ function frontendController($scope, modal, menuService, userService) {
         });
 }
 
-angular.module('example')
-    .controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
-},{"../../components/services/menu":2,"../../components/services/user":3,"../../components/utilities/modal":4,"../../core":7}],15:[function(require,module,exports){
+modules.root.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+},{"../../components/services/menu":4,"../../components/services/user":5,"../../components/utilities/modal":6,"../../core":9}],16:[function(require,module,exports){
 /**
  * Created by wowhy on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('./frontendController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -521,22 +634,21 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
-            templateUrl: 'app/modules/frontend/index.html',
-            data: {pageTitle: '主页', pageSubTitle: ''},
+            templateUrl: 'app/modules/frontend/layout/index.html',
+            data: { pageTitle: '主页', pageSubTitle: ''},
             controller: 'frontendController'
         })
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":7,"./frontendController":14}],16:[function(require,module,exports){
+},{"../../core":9,"./frontendController":15}],17:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
-require('../admin/homeController');
+var modules = require('../../core');
 require('./userController');
 
 function route($stateProvider) {
@@ -545,7 +657,7 @@ function route($stateProvider) {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
             views: {
-                'page': {
+                'page@admin': {
                     templateUrl: 'app/modules/user/user-list.html',
                     controller: 'userController'
                 }
@@ -554,8 +666,10 @@ function route($stateProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', route]);
-},{"../../core":7,"../admin/homeController":12,"./userController":17}],17:[function(require,module,exports){
+modules.root.config(['$stateProvider', route]);
+},{"../../core":9,"./userController":18}],18:[function(require,module,exports){
+var modules = require('../../core');
+
 require('../../components/services/user');
 require('../../components/utilities/msg');
 
@@ -578,7 +692,7 @@ function userController($scope, userService, msg) {
 			   });
 }
 
-angular.module('example')
+modules.root
 	   .filter('userStatus', [function() {
 		   return function(value) {
 			   switch(value){
@@ -591,4 +705,4 @@ angular.module('example')
 		   }
 	   }])
 	   .controller('userController', ['$scope', 'userService', 'msg', userController]);
-},{"../../components/services/user":3,"../../components/utilities/msg":5}]},{},[1]);
+},{"../../components/services/user":5,"../../components/utilities/msg":7,"../../core":9}]},{},[1]);

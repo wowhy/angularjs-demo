@@ -2,7 +2,7 @@
  * Created by hongyuan on 2015/11/16.
  */
 
-require('../../core');
+var modules = require('../../core');
 require('./loginController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -21,4 +21,4 @@ function route($stateProvider, $urlRouterProvider) {
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);

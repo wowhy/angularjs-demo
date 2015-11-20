@@ -1,7 +1,7 @@
 /**
  * Created by wowhy on 2015/11/16.
  */
-require('../../core');
+var modules = require('../../core');
 require('./frontendController');
 
 function route($stateProvider, $urlRouterProvider) {
@@ -10,11 +10,11 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
-            templateUrl: 'app/modules/frontend/index.html',
-            data: {pageTitle: '主页', pageSubTitle: ''},
+            templateUrl: 'app/modules/frontend/layout/index.html',
+            data: { pageTitle: '主页', pageSubTitle: ''},
             controller: 'frontendController'
         })
     ;
 }
 
-angular.module('example').config(['$stateProvider', '$urlRouterProvider', route]);
+modules.root.config(['$stateProvider', '$urlRouterProvider', route]);

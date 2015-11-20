@@ -1,7 +1,9 @@
+var modules = require('../../core');
+
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', menus: [{name: '用户管理', url: '/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]}
         ];
 
         var defer = $q.defer();
@@ -47,5 +49,4 @@ function menuService($http, $q) {
     };
 }
 
-angular.module('example.service')
-    .service('menuService', ['$http', '$q', menuService]);
+modules.services.service('menuService', ['$http', '$q', menuService]);

@@ -3,7 +3,8 @@ var modules = require('../../core');
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]},
+            { name: '报表管理系统', icon: 'icon-home', menus: [{name: '数据源管理', url: '#/rpt/datasource'}] }
         ];
 
         var defer = $q.defer();

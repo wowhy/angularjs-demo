@@ -9,6 +9,7 @@ require('./modules/frontend/main');
 require('./modules/admin/main');
 require('./modules/account/main');
 require('./modules/user/main');
+require('./modules/datasource/main');
 
 function run($rootScope, $state, setting, $uibModalStack) {
     $rootScope.$state = $state;
@@ -32,7 +33,7 @@ function run($rootScope, $state, setting, $uibModalStack) {
 }
 
 modules.root.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
-},{"./components/utilities/setting":8,"./core":9,"./modules/account/main":11,"./modules/admin/main":14,"./modules/frontend/main":16,"./modules/user/main":17}],2:[function(require,module,exports){
+},{"./components/utilities/setting":8,"./core":9,"./modules/account/main":11,"./modules/admin/main":14,"./modules/datasource/main":16,"./modules/frontend/main":18,"./modules/user/main":19}],2:[function(require,module,exports){
 var modules = require('../../core');
 require('../utilities/setting');
 
@@ -113,7 +114,8 @@ var modules = require('../../core');
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
-            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]}
+            {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]},
+            { name: '报表管理系统', icon: 'icon-home', menus: [{name: '数据源管理', url: '#/rpt/datasource'}] }
         ];
 
         var defer = $q.defer();
@@ -577,6 +579,34 @@ function route($stateProvider) {
 
 modules.root.config(['$stateProvider', route]);
 },{"../../components/utilities/setting":8,"../../core":9,"./adminController":12,"./dashboardController":13}],15:[function(require,module,exports){
+var modules = require('../../core');
+
+function dataSourceController($scope) {
+    $scope.message = 'Hello';
+}
+
+modules.root.controller('dataSourceController', ['$scope', dataSourceController]);
+},{"../../core":9}],16:[function(require,module,exports){
+var modules = require('../../core');
+require('./dataSourceController');
+
+function route($stateProvider) {
+    $stateProvider
+        .state('admin.datasource', {
+            url: '/rpt/datasource',
+            data: { pageTitle: '用户管理', pageSubTitle: '列表' },
+            views: {
+                'page@admin': {
+                    templateUrl: 'app/modules/datasource/list.html',
+                    controller: 'dataSourceController'
+                }
+            }
+        })
+    ;
+}
+
+modules.root.config(['$stateProvider', route]);
+},{"../../core":9,"./dataSourceController":15}],17:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/17.
  */
@@ -621,7 +651,7 @@ function frontendController($scope, modal, menuService, userService) {
 }
 
 modules.root.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
-},{"../../components/services/menu":4,"../../components/services/user":5,"../../components/utilities/modal":6,"../../core":9}],16:[function(require,module,exports){
+},{"../../components/services/menu":4,"../../components/services/user":5,"../../components/utilities/modal":6,"../../core":9}],18:[function(require,module,exports){
 /**
  * Created by wowhy on 2015/11/16.
  */
@@ -643,7 +673,7 @@ function route($stateProvider, $urlRouterProvider) {
 
 modules.root.config(['$stateProvider', '$urlRouterProvider', route]);
 
-},{"../../core":9,"./frontendController":15}],17:[function(require,module,exports){
+},{"../../core":9,"./frontendController":17}],19:[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -667,7 +697,7 @@ function route($stateProvider) {
 }
 
 modules.root.config(['$stateProvider', route]);
-},{"../../core":9,"./userController":18}],18:[function(require,module,exports){
+},{"../../core":9,"./userController":20}],20:[function(require,module,exports){
 var modules = require('../../core');
 
 require('../../components/services/user');
@@ -676,16 +706,16 @@ require('../../components/utilities/msg');
 function userController($scope, userService, msg) {
 	$scope.list = [];
 	
-	$scope.gridOptions = {
-		data: 'list',
-		columnDefs: [
-			{ field: 'Code', displayName: '用户代码', width: '20%' },
-			{ field:'Name', displayName: '姓名', width: '*' },
-			{ field:'Email', displayName: '邮箱', width: '30%' },
-			{ field:'Status', displayName: '状态', width: 80, cellFilter: 'userStatus' }
-		]
-	};
-	
+	//$scope.gridOptions = {
+	//	data: 'list',
+	//	columnDefs: [
+	//		{ field: 'Code', displayName: '用户代码', width: '20%' },
+	//		{ field:'Name', displayName: '姓名', width: '*' },
+	//		{ field:'Email', displayName: '邮箱', width: '30%' },
+	//		{ field:'Status', displayName: '状态', width: 80, cellFilter: 'userStatus' }
+	//	]
+	//};
+
 	userService.search(1, 100, {})
 			   .then(function(result){
 				   $scope.list = result.data;

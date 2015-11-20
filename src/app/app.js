@@ -8,6 +8,7 @@ require('./modules/frontend/main');
 require('./modules/admin/main');
 require('./modules/account/main');
 require('./modules/user/main');
+require('./modules/datasource/main');
 
 function run($rootScope, $state, setting, $uibModalStack) {
     $rootScope.$state = $state;

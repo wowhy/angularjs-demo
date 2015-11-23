@@ -4,9 +4,9 @@ var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',
     expired_duration = 1000 * 60 * 120; // 2 hours
 
-app.factory('session', ['localStore', sessionFactory]);
+app.factory('session', ['localStore', 'guid', sessionFactory]);
 
-function sessionFactory(store) {
+function sessionFactory(store, guid) {
     var _session = {
         sessionId: null,
         username: '',
@@ -45,7 +45,7 @@ function sessionFactory(store) {
     }
 
     function onSet(opts) {
-        opts.sessionId = createGuid();
+        opts.sessionId = guid.newGuid();
         _syncSession(opts); //将opts的数据设置到session中并保存在localStorage
 
         store.set(session_key, opts);

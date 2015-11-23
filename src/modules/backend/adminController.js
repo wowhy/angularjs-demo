@@ -6,9 +6,6 @@ require('service/menu');
 require('directive/spinnerBar');
 require('directive/pageSidebar');
 
-function adminController($scope){
-}
-
 function headerController($scope, $location, userService, setting){
     $scope.toggleSidebar = function(){
         setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
@@ -30,6 +27,5 @@ function navbarController($scope, menuService) {
         });
 }
 
-app.controller('adminController', ['$scope', adminController])
-   .controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+app.controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
    .controller('navbarController', ['$scope', 'menuService', navbarController]);

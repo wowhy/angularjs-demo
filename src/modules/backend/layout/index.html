@@ -1,5 +1,5 @@
-<link href="assets/admin/layout/css/layout.css" rel="stylesheet" type="text/css"/>
-<link href="assets/admin/layout/css/themes/darkblue.css" rel="stylesheet" type="text/css"/>
+<link href="assets/backend/layout/css/layout.css" rel="stylesheet" type="text/css"/>
+<link href="assets/backend/layout/css/themes/darkblue.css" rel="stylesheet" type="text/css"/>
 
 <div class="page-on-load page-header-fixed page-sidebar-closed-hide-logo"
      ng-class="{ 'page-sidebar-closed': setting.layout.pageSidebarClosed }">
@@ -11,26 +11,26 @@
     </div>
 
     <div class="page-header navbar navbar-fixed-top"
-         ng-include="'modules/admin/layout/header.html'">
+         ng-include="'modules/backend/layout/header.html'">
     </div>
 
     <div class="clearfix">
     </div>
 
     <div class="page-container">
-        <div ng-include="'modules/admin/layout/sidebar.html'"
+        <div ng-include="'modules/backend/layout/sidebar.html'"
              class="page-sidebar-wrapper">
         </div>
 
         <div class="page-content-wrapper">
             <div class="page-content">
-                <div ui-view="page" class="fade-in-up">
+                <div ui-view class="fade-in-up">
                 </div>
             </div>
         </div>
     </div>
 
-    <div ng-include="'modules/admin/layout/footer.html'"
+    <div ng-include="'modules/backend/layout/footer.html'"
          class="page-footer">
     </div>
 </div>

@@ -60,7 +60,7 @@ module.exports = function (grunt) {
             },
 
             'app': {
-                src: ['src/core.js', 'src/app.js', 'src/components/**/*.js', 'src/modules/**/*.js'],
+                src: ['src/app.js'],
                 dest: 'src/main.js'
             }
         },

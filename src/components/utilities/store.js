@@ -1,7 +1,7 @@
 ﻿app.factory('localStore', [localStorageFactory]);
 app.factory('sessionStore', [sessionStorageFactory]);
 
-function localStoreFactory() {
+function localStorageFactory() {
     return getStorage('localStorage');
 }
 

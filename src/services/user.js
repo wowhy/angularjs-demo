@@ -100,16 +100,12 @@ function userService($http, $q, setting) {
     };
 
     this.login = function (username, password) {
-        setting.setAuth(username);
-
         var defer = $q.defer();
         defer.resolve({success: true});
         return defer.promise;
     }
 
     this.logout = function () {
-        setting.setAuth('');
-
         var defer = $q.defer();
         defer.resolve();
         return defer.promise;

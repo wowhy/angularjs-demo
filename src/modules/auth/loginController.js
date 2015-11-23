@@ -1,11 +1,12 @@
 require('service/user');
 
-function loginController($scope, $location, userService, $uibModalInstance) {
+function loginController($scope, $state, userService, setting) {
     $scope.login = function () {
         userService.login($scope.username, $scope.password)
             .then(function (result) {
                 if (result.success) {
-                    $location.path('/dashboard');
+                    setting.layout.path = 'modules/backend/layout/index.html';
+                    $state.go('dashboard', {});
                 } else {
                     alert(result.message);
                 }
@@ -13,4 +14,4 @@ function loginController($scope, $location, userService, $uibModalInstance) {
     }
 }
 
-app.controller('loginController', ['$scope', '$location', 'userService', loginController]);
+app.controller('loginController', ['$scope', '$state', 'userService', 'setting', loginController]);

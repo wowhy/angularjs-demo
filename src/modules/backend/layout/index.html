@@ -1,0 +1,37 @@
+<link href="assets/backend/layout/css/layout.css" rel="stylesheet" type="text/css"/>
+<link href="assets/backend/layout/css/themes/darkblue.css" rel="stylesheet" type="text/css"/>
+
+<div class="page-on-load page-header-fixed page-sidebar-closed-hide-logo"
+     ng-class="{ 'page-sidebar-closed': setting.layout.pageSidebarClosed }">
+
+    <div ui-spinner-bar class="page-spinner-bar">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+
+    <div class="page-header navbar navbar-fixed-top"
+         ng-include="'modules/backend/layout/header.html'">
+    </div>
+
+    <div class="clearfix">
+    </div>
+
+    <div class="page-container">
+        <div ng-include="'modules/backend/layout/sidebar.html'"
+             class="page-sidebar-wrapper">
+        </div>
+
+        <div class="page-content-wrapper">
+            <div class="page-content">
+                <div ui-view class="fade-in-up">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-include="'modules/backend/layout/footer.html'"
+         class="page-footer">
+    </div>
+</div>
+

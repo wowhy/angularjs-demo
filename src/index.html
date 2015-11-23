@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" ng-app="example">
 <head>
     <meta charset="utf-8">
@@ -13,11 +13,10 @@
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
 
-    <link href="libs/simple-line-icons/css/simple-line-icons.css" rel="stylesheet"/>
+    <link href="libs/simple-line-icons/css/simple-line-icons.min.css" rel="stylesheet"/>
     <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
     <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
-    <!--<link href="assets/global/css/components.css" rel="stylesheet" />-->
     <link href="assets/global/css/components-rounded.css" rel="stylesheet"/>
     <link href="assets/global/css/site.css" rel="stylesheet"/>
 
@@ -30,9 +29,8 @@
     <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
-    <script src="app/main.js"></script>
+    <script src="main.js"></script>
 </head>
-<body>
-<div class="view-frame" ui-view></div>
+<body ng-include="setting.layout.path">
 </body>
 </html>

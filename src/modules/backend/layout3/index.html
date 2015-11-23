@@ -1,0 +1,33 @@
+<link href="assets/backend/layout3/css/layout.css" rel="stylesheet" type="text/css"/>
+<link href="assets/backend/layout3/css/themes/default.css" rel="stylesheet" type="text/css"/>
+
+<div class="page-on-load">
+
+    <div ui-spinner-bar class="page-spinner-bar">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+
+    <div class="page-header"
+         ng-include="'modules/admin/layout3/header.html'">
+    </div>
+
+    <div class="clearfix">
+    </div>
+
+    <div class="page-container">
+        <div data-ng-include="'modules/admin/layout3/page-head.html'" class="page-head">
+        </div>
+        <div class="page-content">
+            <div class="container">
+                <div ui-view="page" class="fade-in-up">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-include="'modules/admin/layout3/footer.html'"
+         class="page-footer navbar-fixed-bottom">
+    </div>
+</div>

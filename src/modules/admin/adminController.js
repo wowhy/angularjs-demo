@@ -1,11 +1,10 @@
 /**
  * Created by hongyuan on 2015/11/13.
  */
-require('../../core');
-require('../../components/utilities/msg');
-require('../../components/services/menu');
-require('../../components/directives/spinnerBar');
-require('../../components/directives/pageSidebar');
+require('utility/msg');
+require('service/menu');
+require('directive/spinnerBar');
+require('directive/pageSidebar');
 
 function adminController($scope){
 }

@@ -1,8 +1,4 @@
-/**
- * Created by hongyuan on 2015/11/16.
- */
-require('../../core');
-require('../../components/services/user');
+require('service/user');
 
 function loginController($scope, $location, userService, $uibModalInstance) {
     $scope.login = function () {

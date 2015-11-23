@@ -1,8 +1,4 @@
-/**
- * Created by wowhy on 2015/11/16.
- */
-require('../../core');
-require('./frontendController');
+require('frontend/frontendController');
 
 function route($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');

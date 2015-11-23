@@ -1,5 +1,4 @@
-require('../../core');
-require('../utilities/setting');
+require('utility/setting');
 
 function uiPageSidebar() {
     return {

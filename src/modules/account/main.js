@@ -1,9 +1,4 @@
-/**
- * Created by hongyuan on 2015/11/16.
- */
-
-require('../../core');
-require('./loginController');
+require('account/loginController');
 
 function route($stateProvider, $urlRouterProvider) {
     $stateProvider

@@ -1,8 +1,4 @@
-/**
- * Created by hongyuan on 2015/11/18.
- */
-require('../../core');
-require('./setting');
+require('utility/setting');
 
 function modalFactory($uibModal, setting){
     var modal = {};

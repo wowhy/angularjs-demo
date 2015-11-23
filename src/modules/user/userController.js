@@ -1,7 +1,5 @@
-require('../../core');
-
-require('../../components/services/user');
-require('../../components/utilities/msg');
+require('service/user');
+require('utility/msg');
 
 function userController($scope, userService, msg) {
     $scope.list = [];

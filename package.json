@@ -11,7 +11,8 @@
     "grunt-contrib-htmlmin": "^0.6.0",
     "grunt-contrib-uglify": "^0.5.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-usemin": "^3.1.1"
+    "grunt-usemin": "^3.1.1",
+    "remapify": "^2.1.0"
   },
   "main": "index.js",
   "directories": {
@@ -30,5 +31,6 @@
     "url": "https://github.com/wowhy/angular-demo/issues"
   },
   "homepage": "https://github.com/wowhy/angular-demo#readme",
-  "description": ""
+  "description": "",
+  "browser": {}
 }

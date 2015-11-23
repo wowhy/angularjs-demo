@@ -2,12 +2,15 @@
  * Created by hongyuan on 2015/11/9.
  */
 
-require('./core');
-require('./components/utilities/setting');
-require('./modules/frontend/main');
-require('./modules/admin/main');
-require('./modules/account/main');
-require('./modules/user/main');
+require('core');
+require('utility/setting');
+
+require('admin/main');
+require('frontend/main');
+require('account/main');
+require('user/main');
+
+app.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
 
 function run($rootScope, $state, setting, $uibModalStack) {
     $rootScope.$state = $state;
@@ -25,9 +28,7 @@ function run($rootScope, $state, setting, $uibModalStack) {
             }
         });
 
-    $rootScope.$on('$stateChangeSuccess', function(){
+    $rootScope.$on('$stateChangeSuccess', function () {
         $uibModalStack.dismissAll();
     });
 }
-
-app.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);

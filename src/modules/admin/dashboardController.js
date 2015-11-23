@@ -1,5 +1,4 @@
-require('../../core');
-require('../../components/utilities/msg');
+require('utility/msg');
 
 function dashboardController($scope, msg){
     // msg.confirm({text: 'Hello, Dashboard!'});

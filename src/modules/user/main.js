@@ -1,9 +1,4 @@
-/**
- * Created by hongyuan on 2015/11/16.
- */
-
-require('../../core');
-require('./userController');
+require('user/userController');
 
 function route($stateProvider) {
     $stateProvider

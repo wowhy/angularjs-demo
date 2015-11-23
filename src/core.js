@@ -61,4 +61,4 @@ app.run = function(method){
 };
 
 window.app = app;
-module.exports = app;
+module.export = app;

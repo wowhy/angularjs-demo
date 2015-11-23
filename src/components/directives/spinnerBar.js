@@ -1,5 +1,3 @@
-require('../../core');
-
 function uiSpinnerBar($rootScope) {
     return {
         link: function (scope, element/*, attrs*/) {

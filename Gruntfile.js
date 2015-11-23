@@ -1,4 +1,5 @@
 module.exports = function (grunt) {
+    var alias = require("browserify-alias-grunt");
 
     // Project configuration.
     grunt.initConfig({
@@ -12,7 +13,7 @@ module.exports = function (grunt) {
         // 复制资源文件
         copy: {
             assets: {
-                files: [{expand: true, cwd: 'src', src: ['assets/**/*.{png,jpg,gif,ico}'], dest: 'dist'}]
+                files: [{ expand: true, cwd: 'src', src: ['assets/**/*.{png,jpg,gif,ico}'], dest: 'dist' }]
             },
             libs: {
                 files: [{
@@ -29,8 +30,37 @@ module.exports = function (grunt) {
 
         // 解决依赖关系
         browserify: {
+            options: {
+                alias: alias.map(grunt, [{
+                        cwd: "src/components/utilities",
+                        src: ["**/*.js"],
+                        dest: "utility"
+                    }, {
+                        cwd: "src/components/directives",
+                        src: ["**/*.js"],
+                        dest: "directive"
+                    }, {
+                        cwd: "src/components/filters",
+                        src: ["**/*.js"],
+                        dest: "filter"
+                    }, {
+                        cwd: "src/services",
+                        src: ["**/*.js"],
+                        dest: "service"
+                    }, {
+                        cwd: "src/modules",
+                        src: ["**/*.js"],
+                        dest: ""
+                    }, {
+                        cwd: "src/",
+                        src: ["core.js", "app.js"],
+                        dest: ""
+                    }
+                ])
+            },
+
             'app': {
-                src: 'src/app.js',
+                src: ['src/core.js', 'src/app.js', 'src/components/**/*.js', 'src/modules/**/*.js'],
                 dest: 'src/main.js'
             }
         },
@@ -46,7 +76,7 @@ module.exports = function (grunt) {
 
         // 压缩CSS文件
         cssmin: {
-            options: {report: 'gzip'},
+            options: { report: 'gzip' },
             css: {
                 expand: true,
                 cwd: 'src',
@@ -80,7 +110,7 @@ module.exports = function (grunt) {
                 tasks: ['default']
             },
             scripts: {
-                files: ['src/directives/**/*.js', 'src/components/**/*.js', 'src/modules/**/*.js', 'src/app.js', 'src/core.js'],
+                files: ['src/components/**/*.js', 'src/modules/**/*.js', 'src/app.js', 'src/core.js'],
                 tasks: ['scripts']
             },
             options: {

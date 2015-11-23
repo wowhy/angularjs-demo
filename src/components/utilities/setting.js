@@ -1,5 +1,3 @@
-require('../../core');
-
 function setCookie(name,value,hours){
     var d = new Date();
     d.setTime(d.getTime() + hours * 3600 * 1000);

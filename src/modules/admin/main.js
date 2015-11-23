@@ -4,10 +4,9 @@
 
 // 引用依赖模块，配置路由
 
-require('../../core');
-require('../../components/utilities/setting');
-require('./adminController');
-require('./dashboardController');
+require('utility/setting');
+require('admin/adminController');
+require('admin/dashboardController');
 
 function route($stateProvider) {
     $stateProvider

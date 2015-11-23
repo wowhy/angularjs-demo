@@ -1,5 +1,4 @@
-require('../../core');
-require('./setting');
+require('utility/setting');
 
 function msgFactory($uibModal, setting){
     var msg = {};

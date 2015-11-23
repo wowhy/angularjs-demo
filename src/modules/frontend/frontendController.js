@@ -1,10 +1,6 @@
-/**
- * Created by hongyuan on 2015/11/17.
- */
-require('../../core');
-require('../../components/services/menu');
-require('../../components/services/user');
-require('../../components/utilities/modal');
+require('service/menu');
+require('service/user');
+require('utility/modal');
 
 function frontendController($scope, modal, menuService, userService) {
     $scope.slides = [{

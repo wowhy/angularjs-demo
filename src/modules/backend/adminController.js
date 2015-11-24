@@ -6,16 +6,10 @@ require('service/menu');
 require('directive/spinnerBar');
 require('directive/pageSidebar');
 
-function headerController($scope, $location, userService, setting){
+function headerController($scope, setting){
     $scope.toggleSidebar = function(){
         setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
     };
-
-    $scope.logout = function(){
-        userService.logout().then(function(){
-            $location.path('/');
-        });
-    }
 }
 
 function navbarController($scope, menuService) {
@@ -27,5 +21,5 @@ function navbarController($scope, menuService) {
         });
 }
 
-app.controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+app.controller('headerController', ['$scope', 'setting', headerController])
    .controller('navbarController', ['$scope', 'menuService', navbarController]);

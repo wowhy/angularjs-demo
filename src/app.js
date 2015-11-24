@@ -9,14 +9,12 @@ require('frontend/frontend.config');
 require('auth/auth.config');
 require('backend/backend.config');
 require('dashboard/dashboard.config');
+require('user/user.config');
 
-app.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 
-function run($rootScope, $state, setting, $uibModalStack) {
+function run($rootScope, $state, auth, setting) {
     $rootScope.$state = $state;
     $rootScope.setting = setting;
-
-    $rootScope.$on('$stateChangeSuccess', function () {
-        $uibModalStack.dismissAll();
-    });
+    $rootScope.auth = auth;
 }

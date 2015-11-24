@@ -1,4 +1,5 @@
 ﻿require('utility/store');
+require('utility/guid');
 
 var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',

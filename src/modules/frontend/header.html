@@ -11,11 +11,11 @@
 
             <div class="col-md-6 col-sm-6 additional-nav">
                 <ul class="list-unstyled list-inline pull-right">
-                    <li ng-show="!setting.isAuthenticated"><a ng-click="login()">登录</a></li>
-                    <li ng-show="!setting.isAuthenticated"><a href="#/register">注册</a></li>
-                    <li ng-show="setting.isAuthenticated"><a ng-bind="setting.username"></a></li>
-                    <li ng-show="setting.isAuthenticated"><a href="#/dashboard">后台管理</a></li>
-                    <li ng-show="setting.isAuthenticated"><a ng-click="logout()">退出</a></li>
+                    <li ng-show="!auth.isLogin()"><a ng-click="auth.showLoginModal()">登录</a></li>
+                    <li ng-show="!auth.isLogin()"><a href="#/register">注册</a></li>
+                    <li ng-show="auth.isLogin()"><a ng-bind="auth.getUserName()"></a></li>
+                    <li ng-show="auth.isLogin()"><a href="#/dashboard">后台管理</a></li>
+                    <li ng-show="auth.isLogin()"><a ng-click="auth.logout()">退出</a></li>
                 </ul>
             </div>
         </div>
@@ -77,18 +77,4 @@
             </ul>
         </div>
     </div>
-</div>
-
-<div class="page-slider margin-bottom-40">
-    <uib-carousel>
-        <uib-slide ng-repeat="slide in slides">
-            <img ng-src="{{slide.image}}">
-
-            <div class="carousel-caption">
-                <h4>{{slide.title}}</h4>
-
-                <p>{{slide.content}}</p>
-            </div>
-        </uib-slide>
-    </uib-carousel>
 </div>

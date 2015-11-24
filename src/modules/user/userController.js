@@ -14,10 +14,10 @@ function userController($scope, userService, msg) {
     //	]
     //};
 
-    userService.search(1, 100, {})
-        .then(function (result) {
-            $scope.list = result.data;
-        });
+    //userService.search(1, 100, {})
+    //    .then(function (result) {
+    //        $scope.list = result.data;
+    //    });
 }
 
 app.filter('userStatus', [function () {

@@ -5,7 +5,7 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
-            path: 'modules/frontend/index.html',
+            path: '',
             pageSidebarClosed: false
         },
 

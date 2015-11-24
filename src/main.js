@@ -10,31 +10,30 @@ require('frontend/frontend.config');
 require('auth/auth.config');
 require('backend/backend.config');
 require('dashboard/dashboard.config');
+require('user/user.config');
 
-app.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 
-function run($rootScope, $state, setting, $uibModalStack) {
+function run($rootScope, $state, auth, setting) {
     $rootScope.$state = $state;
     $rootScope.setting = setting;
-
-    $rootScope.$on('$stateChangeSuccess', function () {
-        $uibModalStack.dismissAll();
-    });
+    $rootScope.auth = auth;
 }
-},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","frontend/frontend.config":"frontend/frontend.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
+},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","frontend/frontend.config":"frontend/frontend.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
 require('auth/permission');
 require('auth/session');
 require('auth/securityInterceptor');
+require('auth/auth');
+require('auth/loginController');
 
 app.config(['$stateProvider', route])
-   .run(['$rootScope', loginInterceptor]);
+   .run(['$rootScope', '$state', '$location', 'auth', 'session', 'setting', loginInterceptor]);
 
 
 function route($stateProvider) {
     $stateProvider
         .state('login', {
             url: '/login',
-            templateUrl: 'modules/auth/login.html',
             data: {pageTitle: '登录', pageSubTitle: ''},
             controller: 'loginController'
         })
@@ -46,30 +45,127 @@ function route($stateProvider) {
     ;
 }
 
-function loginInterceptor($rootScope){
+function loginInterceptor($rootScope, $state, $location, auth, session, setting){
     $rootScope.$on('$stateChangeStart',
         function (event, toState/*, toParams, fromState, fromParams*/) {
+            if(toState.name == 'frontend'||
+               toState.name == 'register') {
+                setting.layout.path = 'modules/frontend/index.html';
+                return;
+            }
+
+            if(toState.name == 'login'){
+                setting.layout.path = 'modules/frontend/index.html';
+                session.clear();
+            }else {
+                if (!!toState.skipAuth) {
+                    setting.layout.path = 'modules/frontend/index.html';
+                    return;
+                }
+
+                setting.layout.path = 'modules/backend/layout/index.html';
+
+                if (!auth.isLogin()) {
+                    setTimeout(function () {
+                        $state.go('login');
+                    }, 0);
+                    event.preventDefault();
+                    return;
+                }
+
+                // check permission
+                // todo
+            }
         });
+
+    $rootScope.$on('$stateChangeSuccess', function(){
+        if($location.search().popup) {
+            angular.element('body').addClass('popup');
+        }
+    });
+
+    $rootScope.$watch(function(){
+        return session.sessionId;
+    }, function(){
+        // todo
+    });
 }
-},{"auth/permission":"auth/permission","auth/securityInterceptor":"auth/securityInterceptor","auth/session":"auth/session"}],"auth/loginController":[function(require,module,exports){
+},{"auth/auth":"auth/auth","auth/loginController":"auth/loginController","auth/permission":"auth/permission","auth/securityInterceptor":"auth/securityInterceptor","auth/session":"auth/session"}],"auth/auth":[function(require,module,exports){
+require('auth/session');
 require('service/user');
 
-function loginController($scope, $state, userService, setting) {
-    $scope.login = function () {
-        userService.login($scope.username, $scope.password)
-            .then(function (result) {
-                if (result.success) {
-                    setting.layout.path = 'modules/backend/layout/index.html';
-                    $state.go('dashboard', {});
-                } else {
-                    alert(result.message);
-                }
-            });
+app.factory('auth', ['$q', '$state', 'session', 'userService', 'modal', authenticator]);
+
+function authenticator($q, $state, session, userService, modal) {
+    var auth = {
+        getUserName: function () {
+            return session.username;
+        },
+        login: loginUser,
+        logout: logoutUser,
+        isLogin: function () {
+            return !!session.sessionId;
+        },
+        showLoginModal: function () {
+            modal.show('modules/auth/login.html', [
+                    '$scope', '$state', 'auth', 'setting', function ($scope, $state, auth, setting) {
+                        $scope.login = function () {
+                            auth.login($scope.username, $scope.password)
+                                .then(function (result) {
+                                    if (result.success) {
+                                        setting.layout.path = 'modules/backend/layout/index.html';
+                                        $state.go('dashboard', {});
+                                    } else {
+                                        alert(result.message);
+                                    }
+                                });
+                        };
+                    }
+                ],
+                'login'
+            )
+            ;
+        }
+    };
+    return auth;
+
+    function loginUser(username, password) {
+        var defer = $q.defer();
+
+        username === password;
+
+        session.set({
+            username: username
+        });
+
+        defer.resolve({
+            success: true,
+            message: '登录成功'
+        });
+
+        auth.username = username;
+
+        return defer.promise;
+    }
+
+    function logoutUser() {
+        $state.go('login');
     }
 }
+},{"auth/session":"auth/session","service/user":"service/user"}],"auth/loginController":[function(require,module,exports){
+require('auth/auth');
+require('utility/modal');
 
-app.controller('loginController', ['$scope', '$state', 'userService', 'setting', loginController]);
-},{"service/user":"service/user"}],"auth/permission":[function(require,module,exports){
+app.controller('loginController', [
+    '$scope', 'auth', loginController
+]);
+
+function loginController($scope, auth) {
+    auth.showLoginModal();
+}
+
+
+},{"auth/auth":"auth/auth","utility/modal":"utility/modal"}],"auth/permission":[function(require,module,exports){
 
 },{}],"auth/securityInterceptor":[function(require,module,exports){
 app.factory('securityInterceptor', ['$q', '$injector', securityInterceptor])
@@ -93,14 +189,15 @@ function securityInterceptor($q, $injector) {
 }
 },{}],"auth/session":[function(require,module,exports){
 require('utility/store');
+require('utility/guid');
 
 var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',
     expired_duration = 1000 * 60 * 120; // 2 hours
 
-app.factory('session', ['localStore', sessionFactory]);
+app.factory('session', ['localStore', 'guid', sessionFactory]);
 
-function sessionFactory(store) {
+function sessionFactory(store, guid) {
     var _session = {
         sessionId: null,
         username: '',
@@ -139,7 +236,7 @@ function sessionFactory(store) {
     }
 
     function onSet(opts) {
-        opts.sessionId = createGuid();
+        opts.sessionId = guid.newGuid();
         _syncSession(opts); //将opts的数据设置到session中并保存在localStorage
 
         store.set(session_key, opts);
@@ -190,7 +287,7 @@ function sessionFactory(store) {
         store.remove(session_timestamp_key);
     }
 }
-},{"utility/store":"utility/store"}],"backend/adminController":[function(require,module,exports){
+},{"utility/guid":"utility/guid","utility/store":"utility/store"}],"backend/adminController":[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
@@ -199,16 +296,10 @@ require('service/menu');
 require('directive/spinnerBar');
 require('directive/pageSidebar');
 
-function headerController($scope, $location, userService, setting){
+function headerController($scope, setting){
     $scope.toggleSidebar = function(){
         setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
     };
-
-    $scope.logout = function(){
-        userService.logout().then(function(){
-            $location.path('/');
-        });
-    }
 }
 
 function navbarController($scope, menuService) {
@@ -220,7 +311,7 @@ function navbarController($scope, menuService) {
         });
 }
 
-app.controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+app.controller('headerController', ['$scope', 'setting', headerController])
    .controller('navbarController', ['$scope', 'menuService', navbarController]);
 },{"directive/pageSidebar":"directive/pageSidebar","directive/spinnerBar":"directive/spinnerBar","service/menu":"service/menu","utility/msg":"utility/msg"}],"backend/backend.config":[function(require,module,exports){
 /**
@@ -398,6 +489,7 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
+            templateUrl: 'modules/frontend/slider.html',
             data: { pageTitle: '主页', pageSubTitle: ''},
             controller: 'frontendController'
         })
@@ -413,7 +505,7 @@ require('utility/modal');
 
 require('auth/loginController');
 
-function frontendController($scope, modal, menuService, userService) {
+function frontendController($scope, menuService) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -434,21 +526,13 @@ function frontendController($scope, modal, menuService, userService) {
 
     $scope.menus = [];
 
-    $scope.login = function(){
-        modal.show('modules/auth/login.html', 'loginController', 'login');
-    };
-
-    $scope.logout = function(){
-        userService.logout();
-    };
-
     menuService.frontendMenus()
         .then(function (menus) {
             $scope.menus = menus;
         });
 }
 
-app.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+app.controller('frontendController', ['$scope', 'menuService', frontendController]);
 },{"auth/loginController":"auth/loginController","service/menu":"service/menu","service/user":"service/user","utility/modal":"utility/modal"}],"service/menu":[function(require,module,exports){
 function menuService($http, $q) {
     this.authorizationMenus = function () {
@@ -617,20 +701,16 @@ function userService($http, $q, setting) {
 }
 
 app.service('userService', ['$http', '$q', 'setting', userService]);
-},{"utility/setting":"utility/setting"}],"user/main":[function(require,module,exports){
+},{"utility/setting":"utility/setting"}],"user/user.config":[function(require,module,exports){
 require('user/userController');
 
 function route($stateProvider) {
     $stateProvider
-        .state('admin.user', {
+        .state('user', {
             url: '/user',
             data: {pageTitle: '用户管理', pageSubTitle: '列表'},
-            views: {
-                'page@admin': {
-                    templateUrl: 'modules/user/user-list.html',
-                    controller: 'userController'
-                }
-            }
+            templateUrl: 'modules/user/user-list.html',
+            controller: 'userController'
         })
     ;
 }
@@ -653,10 +733,10 @@ function userController($scope, userService, msg) {
     //	]
     //};
 
-    userService.search(1, 100, {})
-        .then(function (result) {
-            $scope.list = result.data;
-        });
+    //userService.search(1, 100, {})
+    //    .then(function (result) {
+    //        $scope.list = result.data;
+    //    });
 }
 
 app.filter('userStatus', [function () {
@@ -688,7 +768,7 @@ app.factory('guid', [guidFactory]);
 },{}],"utility/modal":[function(require,module,exports){
 require('utility/setting');
 
-function modalFactory($uibModal, setting){
+function modalFactory($uibModal, $rootScope, $uibModalStack){
     var modal = {};
 
     modal.show = function(templateUrl, controller, size){
@@ -701,10 +781,14 @@ function modalFactory($uibModal, setting){
         return dialog.result;
     };
 
+    $rootScope.$on('$stateChangeSuccess', function () {
+        $uibModalStack.dismissAll();
+    });
+
     return modal;
 }
 
-app.factory('modal', ['$uibModal', modalFactory]);
+app.factory('modal', ['$uibModal', '$rootScope', '$uibModalStack', modalFactory]);
 },{"utility/setting":"utility/setting"}],"utility/msg":[function(require,module,exports){
 require('utility/setting');
 
@@ -757,7 +841,7 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
-            path: 'modules/frontend/index.html',
+            path: '',
             pageSidebarClosed: false
         },
 

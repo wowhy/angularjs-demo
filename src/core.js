@@ -15,6 +15,7 @@ var filters = angular.module('example.filters', ['example.utility']);
 var example = angular.module('example', [
     'example.directive',
     'example.service',
+    'example.filters',
     'example.utility',
     'ngLocale',
     'ngTouch',

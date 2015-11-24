@@ -10,6 +10,7 @@ require('auth/auth.config');
 require('backend/backend.config');
 require('dashboard/dashboard.config');
 require('user/user.config');
+require('dataSource/dataSource.config');
 
 app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 

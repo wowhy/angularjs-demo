@@ -11,6 +11,7 @@ require('auth/auth.config');
 require('backend/backend.config');
 require('dashboard/dashboard.config');
 require('user/user.config');
+require('dataSource/dataSource.config');
 
 app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 
@@ -19,7 +20,7 @@ function run($rootScope, $state, auth, setting) {
     $rootScope.setting = setting;
     $rootScope.auth = auth;
 }
-},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","frontend/frontend.config":"frontend/frontend.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
+},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","dataSource/dataSource.config":"dataSource/dataSource.config","frontend/frontend.config":"frontend/frontend.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
 require('auth/permission');
 require('auth/session');
 require('auth/securityInterceptor');
@@ -340,6 +341,7 @@ var filters = angular.module('example.filters', ['example.utility']);
 var example = angular.module('example', [
     'example.directive',
     'example.service',
+    'example.filters',
     'example.utility',
     'ngLocale',
     'ngTouch',
@@ -408,7 +410,48 @@ function dashboardController($scope) {
 }
 
 app.controller('dashboardController', ['$scope', dashboardController]);
-},{}],"directive/pageSidebar":[function(require,module,exports){
+},{}],"dataSource/dataSource.config":[function(require,module,exports){
+require('dataSource/dataSourceController');
+
+app.config(['$stateProvider', route]);
+
+function route($stateProvider) {
+    $stateProvider
+        .state('dataSource', {
+            url: '/datasource',
+            data: { pageTitle: '数据源管理', pageSubTitle: '列表' },
+            templateUrl: 'modules/datasource/list.html',
+            controller: 'dataSourceController'
+        })
+    ;
+}
+},{"dataSource/dataSourceController":"dataSource/dataSourceController"}],"dataSource/dataSourceController":[function(require,module,exports){
+require('filter/dataSourceStatus');
+require('service/dataSource');
+
+app.controller('dataSourceController', ['$scope', 'dataSourceService', dataSourceController]);
+
+function dataSourceController($scope, dataSourceService) {
+    $scope.current = 1;
+    $scope.pageSize = 3;
+
+    $scope.pagination = function () {
+        dataSourceService.count().then(function (total) {
+            $scope.total = total;
+        });
+
+        dataSourceService.search($scope.current, $scope.pageSize)
+            .then(function (data) {
+                $scope.data = data;
+            });
+
+        //$scope.total = dataSourceService.count();
+        //$scope.data = dataSourceService.search($scope.current, $scope.pageSize);
+    }
+
+    $scope.pagination();
+}
+},{"filter/dataSourceStatus":"filter/dataSourceStatus","service/dataSource":"service/dataSource"}],"directive/pageSidebar":[function(require,module,exports){
 require('utility/setting');
 
 function uiPageSidebar() {
@@ -480,6 +523,20 @@ function uiSpinnerBar($rootScope) {
 }
 
 app.directive('uiSpinnerBar', ['$rootScope', uiSpinnerBar]);
+},{}],"filter/dataSourceStatus":[function(require,module,exports){
+app.filter('dataSourceStatus', [dataSourceStatus]);
+
+function dataSourceStatus() {
+    return function (value) {
+        switch (value) {
+            case 1:
+                return '有效';
+
+            default:
+                return '未知';
+        }
+    }
+}
 },{}],"frontend/frontend.config":[function(require,module,exports){
 require('frontend/frontendController');
 
@@ -533,7 +590,44 @@ function frontendController($scope, menuService) {
 }
 
 app.controller('frontendController', ['$scope', 'menuService', frontendController]);
-},{"auth/loginController":"auth/loginController","service/menu":"service/menu","service/user":"service/user","utility/modal":"utility/modal"}],"service/menu":[function(require,module,exports){
+},{"auth/loginController":"auth/loginController","service/menu":"service/menu","service/user":"service/user","utility/modal":"utility/modal"}],"service/dataSource":[function(require,module,exports){
+app.service('dataSourceService', ['$http', '$q', dataSourceService]);
+
+function dataSourceService($http, $q) {
+    var all = [
+        { Code: '1', Name: '123', Database: '123', Server: '123', Status: 1 },
+        { Code: '2', Name: '1223', Database: '1d23', Server: '123', Status: 1 },
+        { Code: '3', Name: '1223', Database: '123f', Server: '123', Status: 2 },
+        { Code: '4', Name: '1d23', Database: '12x3', Server: '123', Status: 2 },
+        { Code: '5', Name: '12a3', Database: '1a23', Server: '123', Status: 1 }
+    ];
+
+    this.search = function (page, limit) {
+        var defer = $q.defer();
+        setTimeout(function () {
+            var total = all.length;
+            var data = [];
+
+            for (var i = (page - 1) * limit; (i < page * limit) && i < total; i++) {
+                data.push(all[i]);
+            }
+
+            defer.resolve(data);
+        }, 2000);
+
+        return defer.promise;
+    }
+
+    this.count = function () {
+        var defer = $q.defer();
+        setTimeout(function () {
+            defer.resolve(all.length);
+        }, 1000);
+
+        return defer.promise;
+    }
+}
+},{}],"service/menu":[function(require,module,exports){
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
@@ -708,9 +802,27 @@ function route($stateProvider) {
     $stateProvider
         .state('user', {
             url: '/user',
-            data: {pageTitle: '用户管理', pageSubTitle: '列表'},
+            data: { pageTitle: '用户管理', pageSubTitle: '列表' },
             templateUrl: 'modules/user/user-list.html',
             controller: 'userController'
+        })
+        .state('user.add', {
+            url: '/user/add',
+            data: { pageTitle: '用户管理', pageSubTitle: '添加' },
+            templateUrl: 'modules/user/user-edit.html',
+            controller: 'userEditController'
+        })
+        .state('user.edit', {
+            url: '/user/edit/:id',
+            data: { pageTitle: '用户管理', pageSubTitle: '编辑' },
+            templateUrl: 'modules/user/user-edit.html',
+            controller: 'userEditController'
+        })
+        .state('user.detail', {
+            url: '/user/detail/:id',
+            data: { pageTitle: '用户管理', pageSubTitle: '编辑' },
+            templateUrl: 'modules/user/user-detail.html',
+            controller: 'userDetailController'
         })
     ;
 }

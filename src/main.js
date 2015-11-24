@@ -108,7 +108,7 @@ function authenticator($q, $state, session, userService, modal) {
         },
         showLoginModal: function () {
             modal.show('modules/auth/login.html', [
-                    '$scope', '$state', 'auth', 'setting', function ($scope, $state, auth, setting) {
+                    '$scope', '$state', 'setting', function ($scope, $state, setting) {
                         $scope.login = function () {
                             auth.login($scope.username, $scope.password)
                                 .then(function (result) {

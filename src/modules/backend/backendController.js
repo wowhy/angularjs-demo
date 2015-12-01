@@ -1,7 +1,6 @@
 /**
  * Created by hongyuan on 2015/11/13.
  */
-require('utility/msg');
 require('service/menu');
 require('directive/spinnerBar');
 require('directive/pageSidebar');

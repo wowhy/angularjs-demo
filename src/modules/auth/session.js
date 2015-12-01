@@ -1,11 +1,8 @@
-﻿require('utility/store');
-require('utility/guid');
-
-var session_key = 'user_session',
+﻿var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',
     expired_duration = 1000 * 60 * 120; // 2 hours
 
-app.factory('session', ['localStore', 'guid', sessionFactory]);
+app.factory('session', ['hngLocalStorage', 'hngGuid', sessionFactory]);
 
 function sessionFactory(store, guid) {
     var _session = {
@@ -32,8 +29,6 @@ function sessionFactory(store, guid) {
                 _syncSession(storedSession || {});
             }
         }
-        console.log('[Init Session]');
-        console.log(_session);
     }
 
     function onClear() {

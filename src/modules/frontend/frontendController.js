@@ -1,10 +1,10 @@
-require('service/menu');
+﻿require('service/menu');
 require('service/user');
 require('utility/modal');
 
 require('auth/loginController');
 
-function frontendController($scope, menuService) {
+function frontendController($scope, menuService, hngMsg) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -31,4 +31,4 @@ function frontendController($scope, menuService) {
         });
 }
 
-app.controller('frontendController', ['$scope', 'menuService', frontendController]);
+app.controller('frontendController', ['$scope', 'menuService', 'hngMsg', frontendController]);

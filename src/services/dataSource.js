@@ -2,14 +2,14 @@
 
 function dataSourceService($http, $q) {
     var all = [
-        { Code: '1', Name: '123', Database: '123', Server: '123', Status: 1 },
-        { Code: '2', Name: '1223', Database: '1d23', Server: '123', Status: 1 },
-        { Code: '3', Name: '1223', Database: '123f', Server: '123', Status: 2 },
-        { Code: '4', Name: '1d23', Database: '12x3', Server: '123', Status: 2 },
-        { Code: '5', Name: '12a3', Database: '1a23', Server: '123', Status: 1 }
+        {Id: 1, Code: '1', Name: '123', Database: '123', Server: '123', Status: 1},
+        {Id: 2, Code: '2', Name: '1223', Database: '1d23', Server: '123', Status: 1},
+        {Id: 3, Code: '3', Name: '1223', Database: '123f', Server: '123', Status: 2},
+        {Id: 4, Code: '4', Name: '1d23', Database: '12x3', Server: '123', Status: 2},
+        {Id: 5, Code: '5', Name: '12a3', Database: '1a23', Server: '123', Status: 1}
     ];
 
-    this.search = function (page, limit) {
+    this.search = function (page, limit, order, filter) {
         var defer = $q.defer();
         setTimeout(function () {
             var total = all.length;
@@ -19,18 +19,31 @@ function dataSourceService($http, $q) {
                 data.push(all[i]);
             }
 
-            defer.resolve(data);
-        }, 2000);
+            defer.resolve({
+                total: all.length,
+                data: data
+            });
+        }, 300);
 
         return defer.promise;
-    }
+    };
 
-    this.count = function () {
+    this.removeById = function (id) {
         var defer = $q.defer();
-        setTimeout(function () {
-            defer.resolve(all.length);
-        }, 1000);
+        angular.forEach(all, function(item, i){
+            if(item.Id === id){
+                all.splice(i, 1);
+                return false;
+            }
+        });
+
+        setTimeout(function(){
+            defer.resolve({
+                success: true,
+                message: '删除成功'
+            });
+        }, 300);
 
         return defer.promise;
-    }
+    };
 }

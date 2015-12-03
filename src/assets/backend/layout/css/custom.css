@@ -58,3 +58,7 @@ Change Quick Sidebar Width
   margin-left: -370px;
 }
 */
+
+body{
+    height: 100%;
+}

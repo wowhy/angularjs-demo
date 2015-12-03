@@ -408,44 +408,64 @@ function dashboardController($scope) {
 app.controller('dashboardController', ['$scope', dashboardController]);
 },{}],"dataSource/dataSource.config":[function(require,module,exports){
 require('dataSource/dataSourceController');
+require('dataSource/dataSourceEditController');
+require('dataSource/dataSourceDetailController');
 
 app.config(['$stateProvider', route]);
 
 function route($stateProvider) {
-    $stateProvider
-        .state('dataSource', {
+    var dataSource = {
+            name: 'dataSource',
+            abstract: true,
             url: '/datasource',
-            data: { pageTitle: '数据源管理', pageSubTitle: '列表' },
+            data: {pageTitle: '数据源管理'},
+            template: '<ui-view />'
+        }, dataSourceList = {
+            name: 'list',
+            url: '',
+            parent: dataSource,
+            data: { pageTitle: '列表' },
             templateUrl: 'modules/datasource/list.html',
             controller: 'dataSourceController'
-        })
-        .state('dataSource.add', {
-            url: '/datasource/add',
-            data: { pageTitle: '数据源管理', pageSubTitle: '列表' },
+        }, dataSourceAdd = {
+            name: 'add',
+            url: '/add',
+            parent: dataSource,
+            data: { pageTitle: '新建' },
             templateUrl: 'modules/datasource/edit.html',
             controller: 'dataSourceEditController'
-        })
-        .state('dataSource.edit', {
-            url: '/datasource/edit/:id',
-            data: { pageTitle: '数据源管理', pageSubTitle: '列表' },
+        }, dataSourceEdit = {
+            name: 'edit',
+            url: '/edit/:id',
+            parent: dataSource,
+            data: { pageTitle: '修改' },
             templateUrl: 'modules/datasource/edit.html',
             controller: 'dataSourceEditController'
-        })
-        .state('dataSource.detail', {
-            url: '/datasource/detail/:id',
-            data: { pageTitle: '数据源管理', pageSubTitle: '列表' },
-            templateUrl: 'modules/datasource/edit.html',
+        }, dataSourceDetail = {
+            name: 'detail',
+            url: '/detail/:id',
+            parent: dataSource,
+            data: { pageTitle: '详细' },
+            templateUrl: 'modules/datasource/detail.html',
             controller: 'dataSourceDetailController'
-        })
+        }
+        ;
+
+    $stateProvider
+        .state(dataSource)
+        .state(dataSourceList)
+        .state(dataSourceAdd)
+        .state(dataSourceEdit)
+        .state(dataSourceDetail)
     ;
 }
-},{"dataSource/dataSourceController":"dataSource/dataSourceController"}],"dataSource/dataSourceController":[function(require,module,exports){
+},{"dataSource/dataSourceController":"dataSource/dataSourceController","dataSource/dataSourceDetailController":"dataSource/dataSourceDetailController","dataSource/dataSourceEditController":"dataSource/dataSourceEditController"}],"dataSource/dataSourceController":[function(require,module,exports){
 require('filter/dataSourceStatus');
 require('service/dataSource');
 
-app.controller('dataSourceController', ['$scope', 'dataSourceService', 'hngMsg', dataSourceController]);
+app.controller('dataSourceController', ['$scope', 'dataSourceService', 'hngMsg', 'hngModal', dataSourceController]);
 
-function dataSourceController($scope, dataSourceService, hngMsg) {
+function dataSourceController($scope, dataSourceService, hngMsg, hngModal) {
     $scope.current = 1;
     $scope.pageSize = 10;
 
@@ -483,44 +503,59 @@ function dataSourceController($scope, dataSourceService, hngMsg) {
             items = [].push(items);
         }
 
-        if(!items.length) {
+        if (!items.length) {
             return;
         }
 
-        var total = items.length;
-        var $progress = hngMsg.progress('正在删除...', total);
+        hngMsg.confirm('是否删除当前选择项？')
+            .then(function (result) {
+                if (result) {
+                    var total = items.length;
+                    var $progress = hngMsg.progress('正在删除...', total);
 
-        var progress = function(result){
-            if (result.success) {
-                $progress.increment('success');
-            }
-            else {
-                $progress.increment('danger');
-            }
+                    var progress = function (result) {
+                        if (result.success) {
+                            $progress.increment('success');
+                        }
+                        else {
+                            $progress.increment('danger');
+                        }
 
-            return doRemove();
-        };
+                        return doRemove();
+                    };
 
-        var doRemove = function () {
-            if(items.length) {
-                return dataSourceService.removeById(items.pop().Id).then(progress);
-            } /*else {
-                $scope.pagination();
-            }*/
-        };
+                    var doRemove = function () {
+                        if (items.length) {
+                            return dataSourceService.removeById(items.pop().Id).then(progress);
+                        }
+                        /*else {
+                         $progress.complete();
+                         // $scope.pagination();
+                         }*/
+                    };
 
-        $progress.result.then(function () {
-            return hngMsg.alert(
-                '删除成功: ' + $progress.getValue('success') +
-                '删除失败: ' + $progress.getValue('danger'));
-        }).then(function () {
-            $scope.pagination();
-        });
-
-        doRemove();
+                    $progress.result.then(function () {
+                        return hngMsg.alert(
+                            '删除成功: ' + $progress.getValue('success') +
+                            '删除失败: ' + $progress.getValue('danger'));
+                    }).then(function () {
+                        $scope.pagination();
+                    });
+                    return doRemove();
+                }
+            });
     };
 
     $scope.pagination();
+
+    $scope.add = function () {
+        var dialog = hngModal.show('modules/dataSource/edit.html', 'dataSourceEditController', {});
+        dialog.closed.then(function (result) {
+            if (result) {
+                $scope.pagination();
+            }
+        });
+    };
 }
 },{"filter/dataSourceStatus":"filter/dataSourceStatus","service/dataSource":"service/dataSource"}],"dataSource/dataSourceDetailController":[function(require,module,exports){
 require('filter/dataSourceStatus');
@@ -562,7 +597,7 @@ function uiPageSidebarMenu(setting) {
                     return;
                 }
 
-                var slideSpeed = parseInt(attrs.slideSpeed);
+                var slideSpeed = 200;
 
                 if (sub.is(":visible")) {
                     $('.arrow', $(this)).removeClass("open");
@@ -1183,7 +1218,8 @@ function settingFactory() {
 
         layout: {
             path: '',
-            pageSidebarClosed: false
+            pageSidebarClosed: false,
+            menuCollapse: true
         },
 
         API: {

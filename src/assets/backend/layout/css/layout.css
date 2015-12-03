@@ -1600,9 +1600,9 @@ Page sidebar
     max-height: none;
     /* set some max height to have a scrollable menu on mobile devices */
   }
-  /*.page-sidebar.navbar-collapse.collapse {
+  .page-sidebar.navbar-collapse.collapse {
     display: none !important;
-  }*/
+  }
   .page-sidebar.navbar-collapse.in {
     border-top: 0 !important;
     margin: 20px;

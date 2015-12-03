@@ -7,8 +7,114 @@ hngModule.service('hngCore', [function () {
     this.service = {};
     this.utility = {};
 }]);
-;
-;
+;(function (hngModule) {
+    hngModule.directive('hngShowModal', ['hngModal', hngShowModal]);
+
+    function hngShowModal(hngModal) {
+        return {
+            scope:{
+                hngModalUrl: '@',
+                hngModalController: '@',
+                hngModalCallback: '&'
+            },
+            link: function (scope, element, attrs) {
+                element.on('click', function() {
+                    var dialog = hngModal.show(scope.hngModalUrl, scope.hngModalController);
+                    if(scope.hngModalCallback){
+                        dialog.closed.then(scope.hngModalCallback);
+                    }
+                });
+            }
+        };
+    }
+})(hngModule);
+;//(function (hngModule) {
+//    hngModule.service('hngAjaxService', ['$http', 'blockUI', function ($http, blockUI) {
+//        this.AjaxPost = function (route, data, successFunction, errorFunction) {
+//            blockUI.start();
+//
+//            $http.post(route, data).success(function (response, status, headers, config) {
+//                blockUI.stop();
+//                successFunction(response, status);
+//            }).error(function (response) {
+//                blockUI.stop();
+//                if (response.IsAuthenicated == false) {
+//                    window.location = "/index.html";
+//                }
+//                errorFunction(response);
+//            });
+//        };
+//
+//        this.AjaxPostWithNoAuthenication = function (route, data, successFunction, errorFunction) {
+//            blockUI.start();
+//            $http.post(route, data).success(function (response, status, headers, config) {
+//                blockUI.stop();
+//                successFunction(response, status);
+//            }).error(function (response) {
+//                blockUI.stop();
+//                errorFunction(response);
+//            });
+//        };
+//
+//        this.AjaxGet = function (route, successFunction, errorFunction) {
+//            blockUI.start();
+//            $http({method: 'GET', url: route}).success(function (response, status, headers, config) {
+//                blockUI.stop();
+//                successFunction(response, status);
+//            }).error(function (response) {
+//                blockUI.stop();
+//                if (response.IsAuthenicated == false) {
+//                    window.location = "/index.html";
+//                }
+//                errorFunction(response);
+//            });
+//        };
+//
+//        this.AjaxGetWithData = function (route, data, successFunction, errorFunction) {
+//            blockUI.start();
+//            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
+//                blockUI.stop();
+//                successFunction(response, status);
+//            }).error(function (response) {
+//                blockUI.stop();
+//                if (response.IsAuthenicated == false) {
+//                    window.location = "/index.html";
+//                }
+//                errorFunction(response);
+//            });
+//        };
+//
+//        this.AjaxGetWithNoBlock = function (route, data, successFunction, errorFunction) {
+//            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
+//                successFunction(response, status);
+//            }).error(function (response) {
+//                ;
+//                if (response.IsAuthenicated == false) {
+//                    window.location = "/index.html";
+//                }
+//                errorFunction(response);
+//            });
+//        }
+//    }]);
+//})(hngModule);
+;//(function (hngModule) {
+//    hngModule.service('hngRESTfulService', ['$http', '$q', hngRESTfulService]);
+//
+//    function hngRESTfulService($http, $q) {
+//        this.createProxy = function (api) {
+//            var proxy = {};
+//
+//            return proxy;
+//        };
+//
+//        this.create = function () {
+//        };
+//
+//        this.update = function(){
+//
+//        };
+//    }
+//})(hngModule);
 ;(function (hngModule) {
     hngModule.factory('hngGuid', [function () {
         return {
@@ -21,6 +127,58 @@ hngModule.service('hngCore', [function () {
             }
         };
     }]);
+})(hngModule);
+;(function (hngModule) {
+    hngModule.factory('hngModal', ['$uibModal', hngModal])
+        .run(['$rootScope', '$uibModalStack', function ($rootScope, $uibModalStack) {
+            $rootScope.$on('$stateChangeSuccess', function () {
+                // 页面跳转后关闭所有模态窗口
+                $uibModalStack.dismissAll();
+            });
+        }]);
+
+    function hngModal($uibModal) {
+        var modal = {};
+
+        /**
+         * @description
+         *
+         * 打开模态窗口
+         *
+         * @param {string} 窗口模板地址
+         * @param {string}|{Array}|{Object} Controller
+         * @param {Object} 窗口传递参数
+         * @returns {dialog}
+         */
+        modal.show = function (url, controller, hngArgs, options) {
+            options = options || {size: 'md'};
+
+            var dialogOptions = angular.extend(options, {
+                templateUrl: url,
+                windowTemplateUrl: '/hfefx/template/modal.html',
+                controller: controller,
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
+                    hngArgs: function () {
+                        return hngArgs;
+                    }
+                }
+            });
+
+            var $dialog = $uibModal.open(dialogOptions);
+
+            return {
+                close: function (/*...*/) {
+                    $dialog.close.apply(arguments);
+                },
+                closed: $dialog.result,
+                opened: $dialog.opened
+            };
+        };
+
+        return modal;
+    }
 })(hngModule);
 ;/**
  * @description
@@ -81,7 +239,7 @@ hngModule.service('hngCore', [function () {
                     ? arguments[arguments.length - 1]
                     : function (result) { return result; }
 
-                title = !!title ? title : confirmOptions.title;
+                title = angular.isString(title) ? title : confirmOptions.title;
             }
 
             var $dialog = { text: text, title: title, ok: confirmOptions.ok, cancel: confirmOptions.cancel },
@@ -92,7 +250,7 @@ hngModule.service('hngCore', [function () {
             options.scope.$dialog = $dialog;
 
             return $uibModal.open(options).result.then(callback);
-        }
+        };
 
         /**
          * @description
@@ -112,7 +270,7 @@ hngModule.service('hngCore', [function () {
                     ? arguments[arguments.length - 1]
                     : function (result) { return result; }
 
-                title = !!title ? title : alertOptions.title;
+                title = angular.isString(title) ? title : alertOptions.title;
             }
 
             var $dialog = { text: text, title: title, close: alertOptions.close },
@@ -123,7 +281,7 @@ hngModule.service('hngCore', [function () {
             options.scope.$dialog = $dialog;
 
             return $uibModal.open(options).result.then(callback);
-        }
+        };
 
         /**
          * @description
@@ -133,7 +291,7 @@ hngModule.service('hngCore', [function () {
          * @param {string} 内容信息
          */
         msg.notify = function () {
-        }
+        };
 
         /**
          * @description
@@ -154,8 +312,8 @@ hngModule.service('hngCore', [function () {
                     ? arguments[arguments.length - 1]
                     : function (result) { return result; }
 
-                value = !!value ? value : '';
-                title = !!title ? title : promptOptions.title;
+                value = angular.isString(value) ? value : '';
+                title = angular.isString(title) ? title : promptOptions.title;
             }
 
             var $dialog = { text: text, value: value, title: title, ok: promptOptions.ok, cancel: promptOptions.cancel },
@@ -171,7 +329,7 @@ hngModule.service('hngCore', [function () {
 
                 return callback(result);
             });
-        }
+        };
 
         msg.progress = function (title, maxValue) {
             title = title ? title : progressOptions.title;
@@ -249,7 +407,7 @@ hngModule.service('hngCore', [function () {
             }
 
             return createProgressInstance(title, maxValue);
-        }
+        };
 
         return msg;
     }
@@ -364,6 +522,11 @@ hngModule.service('hngCore', [function () {
 
   $templateCache.put('/hfefx/template/confirm.html',
     "<div class=\"modal-header\"><button type=\"button\" class=\"close\" ng-click=\"$close(false)\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><div class=\"modal-body\"><p>{{ $dialog.text }}</p></div><div class=\"modal-footer\"><button type=\"submit\" dlg-focus ng-click=\"$close(true)\" class=\"btn btn-primary\">{{ $dialog.ok }}</button> <button ng-click=\"$close(false)\" class=\"btn btn-default\">{{ $dialog.cancel }}</button></div>"
+  );
+
+
+  $templateCache.put('/hfefx/template/modal.html',
+    "<div modal-render=\"{{$isRendered}}\" tabindex=\"-1\" role=\"dialog\" class=\"modal\" uib-modal-animation-class=\"fade\" modal-in-class=\"in\" ng-style=\"{'z-index': 1050 + index*10, display: 'block'}\"><div class=\"modal-dialog\" ng-class=\"size ? 'modal-' + size : ''\" ng-style=\"{'width': width}\"><div class=\"modal-content\" uib-modal-transclude></div></div></div>"
   );
 
 

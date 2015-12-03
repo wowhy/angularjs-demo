@@ -3,8 +3,10 @@
         <h3 class="panel-title">列表</h3>
     </div>
     <div class="panel-footer">
-        <button class="btn btn-success">添加</button>
         <button class="btn btn-success"
+                ng-click="add()">新建</button>
+        <button class="btn btn-success"
+                ng-click="edit()"
                 ng-disabled="selection().length !== 1">
             修改
         </button>
@@ -30,7 +32,7 @@
             <tr ng-repeat="item in data"
                 ng-class="{active: item.__checked}">
                 <td><input type="checkbox" ng-model="item.__checked"></td>
-                <td><a ng-href="#/dataSource/detail/{{item.Id}}" ng-bind="item.Code"></a></td>
+                <td><a ui-sref="detail({id: item.Id})" ng-bind="item.Code"></a></td>
                 <td ng-bind="item.Name"></td>
                 <td ng-bind="item.Database"></td>
                 <td ng-bind="item.Server"></td>

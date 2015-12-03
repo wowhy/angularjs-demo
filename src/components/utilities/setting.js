@@ -6,7 +6,8 @@ function settingFactory() {
 
         layout: {
             path: '',
-            pageSidebarClosed: false
+            pageSidebarClosed: false,
+            menuCollapse: true
         },
 
         API: {

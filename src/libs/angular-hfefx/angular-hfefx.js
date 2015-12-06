@@ -1,4 +1,4 @@
-(function(window, angular){ "use strict";var hngModule = angular.module('hng', ['ui.router', 'ui.bootstrap']);
+(function(window, angular){ "use strict";var hngModule = angular.module('hng', ['ngSanitize', 'ui.router', 'ui.bootstrap', 'blockUI']);
 
 hngModule.constant('hngConfig', {
 });
@@ -28,93 +28,314 @@ hngModule.service('hngCore', [function () {
         };
     }
 })(hngModule);
-;//(function (hngModule) {
-//    hngModule.service('hngAjaxService', ['$http', 'blockUI', function ($http, blockUI) {
-//        this.AjaxPost = function (route, data, successFunction, errorFunction) {
-//            blockUI.start();
-//
-//            $http.post(route, data).success(function (response, status, headers, config) {
-//                blockUI.stop();
-//                successFunction(response, status);
-//            }).error(function (response) {
-//                blockUI.stop();
-//                if (response.IsAuthenicated == false) {
-//                    window.location = "/index.html";
-//                }
-//                errorFunction(response);
-//            });
-//        };
-//
-//        this.AjaxPostWithNoAuthenication = function (route, data, successFunction, errorFunction) {
-//            blockUI.start();
-//            $http.post(route, data).success(function (response, status, headers, config) {
-//                blockUI.stop();
-//                successFunction(response, status);
-//            }).error(function (response) {
-//                blockUI.stop();
-//                errorFunction(response);
-//            });
-//        };
-//
-//        this.AjaxGet = function (route, successFunction, errorFunction) {
-//            blockUI.start();
-//            $http({method: 'GET', url: route}).success(function (response, status, headers, config) {
-//                blockUI.stop();
-//                successFunction(response, status);
-//            }).error(function (response) {
-//                blockUI.stop();
-//                if (response.IsAuthenicated == false) {
-//                    window.location = "/index.html";
-//                }
-//                errorFunction(response);
-//            });
-//        };
-//
-//        this.AjaxGetWithData = function (route, data, successFunction, errorFunction) {
-//            blockUI.start();
-//            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
-//                blockUI.stop();
-//                successFunction(response, status);
-//            }).error(function (response) {
-//                blockUI.stop();
-//                if (response.IsAuthenicated == false) {
-//                    window.location = "/index.html";
-//                }
-//                errorFunction(response);
-//            });
-//        };
-//
-//        this.AjaxGetWithNoBlock = function (route, data, successFunction, errorFunction) {
-//            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
-//                successFunction(response, status);
-//            }).error(function (response) {
-//                ;
-//                if (response.IsAuthenicated == false) {
-//                    window.location = "/index.html";
-//                }
-//                errorFunction(response);
-//            });
-//        }
-//    }]);
-//})(hngModule);
-;//(function (hngModule) {
-//    hngModule.service('hngRESTfulService', ['$http', '$q', hngRESTfulService]);
-//
-//    function hngRESTfulService($http, $q) {
-//        this.createProxy = function (api) {
-//            var proxy = {};
-//
-//            return proxy;
-//        };
-//
-//        this.create = function () {
-//        };
-//
-//        this.update = function(){
-//
-//        };
-//    }
-//})(hngModule);
+;(function (hngModule) {
+    hngModule.service('hngAjaxService', ['$http', 'blockUI', function ($http, blockUI) {
+        this.AjaxPost = function (route, data, successFunction, errorFunction) {
+            blockUI.start();
+            setTimeout(function () {
+                $http.post(route, data).success(function (response, status, headers, config) {
+                    blockUI.stop();
+                    successFunction(response, status);
+                }).error(function (response) {
+                    blockUI.stop();
+                    if (response.IsAuthenicated == false) {
+                        window.location = "/index.html";
+                    }
+                    errorFunction(response);
+                });
+
+            }, 2000);
+        };
+
+        this.AjaxPostWithNoAuthenication = function (route, data, successFunction, errorFunction) {
+            blockUI.start();
+            $http.post(route, data).success(function (response, status, headers, config) {
+                blockUI.stop();
+                successFunction(response, status);
+            }).error(function (response) {
+                blockUI.stop();
+                errorFunction(response);
+            });
+        };
+
+        this.AjaxGet = function (route, successFunction, errorFunction) {
+            blockUI.start();
+            setTimeout(function () {
+                $http({method: 'GET', url: route}).success(function (response, status, headers, config) {
+                    blockUI.stop();
+                    successFunction(response, status);
+                }).error(function (response) {
+                    blockUI.stop();
+                    if (response.IsAuthenicated == false) {
+                        window.location = "/index.html";
+                    }
+                    errorFunction(response);
+                });
+            }, 2000);
+        };
+
+        this.AjaxGetWithData = function (route, data, successFunction, errorFunction) {
+            blockUI.start();
+            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
+                blockUI.stop();
+                successFunction(response, status);
+            }).error(function (response) {
+                blockUI.stop();
+                if (response.IsAuthenicated == false) {
+                    window.location = "/index.html";
+                }
+                errorFunction(response);
+            });
+        };
+
+        this.AjaxGetWithNoBlock = function (route, data, successFunction, errorFunction) {
+            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
+                successFunction(response, status);
+            }).error(function (response) {
+                ;
+                if (response.IsAuthenicated == false) {
+                    window.location = "/index.html";
+                }
+                errorFunction(response);
+            });
+        }
+    }]);
+})(hngModule);
+;(function (hngModule) {
+    hngModule.service('hngRESTfulService', ['$http', '$q', hngRESTfulService]);
+
+    function serializeOrder(order){
+        return order;
+    }
+
+    function serializeFilter(filter){
+        return filter;
+    }
+
+    function hngRESTfulService($http, $q) {
+        var service = this;
+
+        service.createModelProxy = function (api, model, v) {
+            var url = api
+                + (api.lastIndexOf('/') == api.length - 1 ? '' : '/')
+                + (v ? '/' + v + '/' : '')
+                + model;
+
+            return new modelProxy(url);
+        };
+
+        service.get = function (url, params, headers) {
+            return $http({method: 'GET', url: url, data: params, headers: headers});
+        };
+        service.post = function (url, params, headers) {
+            return $http({method: 'POST', url: url, data: params, headers: headers});
+        };
+        service.put = function (url, params, headers) {
+            return $http({method: 'PUT', url: url, data: params, headers: headers});
+        };
+        service.patch = function (url, params, headers) {
+            return $http({method: 'PATCH', url: url, data: params, headers: headers});
+        };
+        service.delete = function (url, params, headers) {
+            return $http({method: 'DELETE', url: url, params: params, headers: headers});
+        };
+
+        function modelProxy(api) {
+            var headers = {},
+                me = this;
+
+            function getModelUrl(api, id){
+                return api + '/' + id;
+            }
+
+            /**
+             * @description
+             *
+             * 获取实体
+             * api url: http://api/model/:id
+             *
+             * @param {string} 实体id
+             * @returns {promise} 结果
+             */
+            me.get = function (id) {
+                var url = getModelUrl(api, id);
+                var ajax = service.get(url, {}, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: (angular.isObject(res) ? res.data : res)
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+
+            /**
+             * @description
+             *
+             * 查询所有实体
+             * api url: http://api/model?order=:order&filter=:filter
+             *
+             * @param {object} 排序方式
+             * @param {object} 搜索条件
+             * @returns {promise}
+             */
+            me.all = function (order, filter) {
+                var url = api;
+                var ajax = service.get(url, {
+                    order: serializeOrder(order),
+                    filter: serializeFilter(filter)
+                }, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: res.data
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+
+            /**
+             * @description
+             *
+             * 分页查询实体
+             * api url: http://api/model/model?page=:page&limit=:limit&order=:order&filter=:filter
+             *
+             * @param {integer} 当前页数
+             * @param {integer} 数量
+             * @param {object} 排序方式
+             * @param {object} 搜索条件
+             * @returns {promise}
+             */
+            me.query = function (page, limit, order, filter) {
+                var url = api;
+                var ajax = service.get(url, {
+                    page: page,
+                    limit: limit,
+                    order: serializeOrder(order),
+                    filter: serializeFilter(filter)
+                }, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: res.data
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+
+            /**
+             * @description
+             *
+             * 创建实体
+             * api url: http://api/model/
+             *
+             * @param {object} 实体
+             * @returns {promise}
+             */
+            me.create = function (model) {
+                var url = api;
+                var ajax = service.post(url, model, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: res.data
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+
+            /**
+             * @description
+             *
+             * 修改实体
+             * api url: http://api/model/:id
+             *
+             * @param {object} 需要修改的实体
+             * @returns {promise}
+             */
+            me.update = function (model) {
+                var url = getModelUrl(api, model.Id);
+                var ajax = service.post(url, model, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: res.data
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+
+            /**
+             * @description
+             *
+             * 删除实体
+             * api url: http://api/model/:id
+             *
+             * @param {string} 实体ID
+             * @returns {promise}
+             */
+            me.delete = function (id) {
+                var url = getModelUrl(api, model.Id);
+                var ajax = service.delete(url, model, headers).then(function (res) {
+                    return {
+                        success: true,
+                        data: res.data
+                    };
+                }, function (res) {
+                    return {
+                        status: res.status,
+                        success: false,
+                        message: res.data
+                    };
+                });
+
+                return $q.all([ajax]).then(function (res) {
+                    return res[0];
+                });
+            };
+        }
+    }
+})(hngModule);
 ;(function (hngModule) {
     hngModule.factory('hngGuid', [function () {
         return {
@@ -170,7 +391,7 @@ hngModule.service('hngCore', [function () {
 
             return {
                 close: function (/*...*/) {
-                    $dialog.close.apply(arguments);
+                    $dialog.close.apply($dialog, arguments);
                 },
                 closed: $dialog.result,
                 opened: $dialog.opened
@@ -189,11 +410,14 @@ hngModule.service('hngCore', [function () {
 (function (hngModule) {
     hngModule.factory('hngMsg', ['$rootScope', '$uibModal', hngMsg]);
 
+    var linebreak = new RegExp('\n');
+
     function hngMsg($rootScope, $uibModal) {
         var msg = {},
             confirmOptions = {
                 templateUrl: '/hfefx/template/confirm.html',
                 backdrop: 'static',
+                size: 'sm',
                 title: '提示消息',
                 ok: '确定',
                 cancel: '取消'
@@ -209,6 +433,7 @@ hngModule.service('hngCore', [function () {
             promptOptions = {
                 templateUrl: '/hfefx/template/prompt.html',
                 backdrop: 'static',
+                size: 'sm',
                 title: '提示消息',
                 ok: '确定',
                 cancel: '取消'
@@ -242,6 +467,8 @@ hngModule.service('hngCore', [function () {
                 title = angular.isString(title) ? title : confirmOptions.title;
             }
 
+            text = text.replace(linebreak, '<br />');
+
             var $dialog = { text: text, title: title, ok: confirmOptions.ok, cancel: confirmOptions.cancel },
                 options = angular.extend({}, confirmOptions, {
                     scope: $rootScope.$new()
@@ -272,6 +499,8 @@ hngModule.service('hngCore', [function () {
 
                 title = angular.isString(title) ? title : alertOptions.title;
             }
+
+            text = text.replace(linebreak, '<br />');
 
             var $dialog = { text: text, title: title, close: alertOptions.close },
                 options = angular.extend({}, alertOptions, {
@@ -315,6 +544,8 @@ hngModule.service('hngCore', [function () {
                 value = angular.isString(value) ? value : '';
                 title = angular.isString(title) ? title : promptOptions.title;
             }
+
+            text = text.replace(linebreak, '<br />');
 
             var $dialog = { text: text, value: value, title: title, ok: promptOptions.ok, cancel: promptOptions.cancel },
                 options = angular.extend({}, promptOptions, {
@@ -516,12 +747,12 @@ hngModule.service('hngCore', [function () {
   'use strict';
 
   $templateCache.put('/hfefx/template/alert.html',
-    "<div class=\"modal-header\"><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><div class=\"modal-body\"><p>{{ $dialog.text }}</p></div><div class=\"modal-footer\"><button type=\"submit\" dlg-focus ng-click=\"$close()\" class=\"btn btn-primary\">{{ $dialog.close }}</button></div>"
+    "<div class=\"modal-header\"><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><div class=\"modal-body\" ng-bind-html=\"$dialog.text\"></div><div class=\"modal-footer\"><button type=\"submit\" dlg-focus ng-click=\"$close()\" class=\"btn btn-primary\">{{ $dialog.close }}</button></div>"
   );
 
 
   $templateCache.put('/hfefx/template/confirm.html',
-    "<div class=\"modal-header\"><button type=\"button\" class=\"close\" ng-click=\"$close(false)\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><div class=\"modal-body\"><p>{{ $dialog.text }}</p></div><div class=\"modal-footer\"><button type=\"submit\" dlg-focus ng-click=\"$close(true)\" class=\"btn btn-primary\">{{ $dialog.ok }}</button> <button ng-click=\"$close(false)\" class=\"btn btn-default\">{{ $dialog.cancel }}</button></div>"
+    "<div class=\"modal-header\"><button type=\"button\" class=\"close\" ng-click=\"$close(false)\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><div class=\"modal-body\" ng-bind-html=\"$dialog.text\"></div><div class=\"modal-footer\"><button type=\"submit\" dlg-focus ng-click=\"$close(true)\" class=\"btn btn-primary\">{{ $dialog.ok }}</button> <button ng-click=\"$close(false)\" class=\"btn btn-default\">{{ $dialog.cancel }}</button></div>"
   );
 
 
@@ -536,7 +767,7 @@ hngModule.service('hngCore', [function () {
 
 
   $templateCache.put('/hfefx/template/prompt.html',
-    "<div class=\"modal-header\"><button type=\"button\" class=\"close\" ng-click=\"$close(false)\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><form><div class=\"modal-body\"><p>{{ $dialog.text }}</p><input class=\"form-control\" dlg-focus ng-model=\"$dialog.value\"></div><div class=\"modal-footer\"><button type=\"submit\" ng-click=\"$close($dialog.value)\" class=\"btn btn-primary\">{{ $dialog.ok }}</button> <button ng-click=\"$close(false)\" class=\"btn btn-default\">{{ $dialog.cancel }}</button></div></form>"
+    "<div class=\"modal-header\"><button type=\"button\" class=\"close\" ng-click=\"$close(false)\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\">{{ $dialog.title }}&nbsp;</h4></div><form><div class=\"modal-body\"><div ng-bind-html=\"$dialog.text\"></div><input class=\"form-control\" dlg-focus ng-model=\"$dialog.value\"></div><div class=\"modal-footer\"><button type=\"submit\" ng-click=\"$close($dialog.value)\" class=\"btn btn-primary\">{{ $dialog.ok }}</button> <button ng-click=\"$close(false)\" class=\"btn btn-default\">{{ $dialog.cancel }}</button></div></form>"
   );
 
 }]);

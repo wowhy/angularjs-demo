@@ -13,6 +13,7 @@ require('user/user.config');
 require('dataSource/dataSource.config');
 require('employee/employee.config');
 require('house/house.config');
+require('customer/customer.config');
 
 app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 

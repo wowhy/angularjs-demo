@@ -1,6 +1,6 @@
 require('service/user');
 
-function userController($scope, userService, msg) {
+function userController($scope, userService) {
     $scope.list = [];
 
     //$scope.gridOptions = {
@@ -30,4 +30,4 @@ app.filter('userStatus', [function () {
             }
         }
     }])
-    .controller('userController', ['$scope', 'userService', 'msg', userController]);
+    .controller('userController', ['$scope', 'userService', userController]);

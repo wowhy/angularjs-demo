@@ -4,7 +4,8 @@ function menuService($http, $q) {
             {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]},
             { name: '报表管理系统', icon: 'icon-home', menus: [{ name: '数据源管理', url: '#/datasource' }] },
             { name: '职员管理', icon: 'icon-home', menus: [{ name: '职员管理', url: '#/employee' }] },
-            { name: '房源管理系统', icon: 'icon-map',menus:[{name:'房源管理',url:'#/house'}] }
+            { name: '房源管理系统', icon: 'icon-map', menus: [{ name: '房源管理', url: '#/house' }] },
+            { name: '客源管理系统', icon: 'icon-map', menus: [{ name: '客户管理', url: '#/customer' }] }
         ];
 
         var defer = $q.defer();

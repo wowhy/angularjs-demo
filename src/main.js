@@ -246,12 +246,12 @@ function sessionFactory(store, guid) {
     }
 
     function isExpired() {
-        function ft(num) {
-            if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
-            if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
-            if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
-            return num;
-        }
+        //function ft(num) {
+        //    if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
+        //    if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
+        //    if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
+        //    return num;
+        //}
         if (!store.enabled) return true;
         var lastSavedTimestamp = store.get(session_timestamp_key);
         if (!lastSavedTimestamp) { // has not save any data yet
@@ -260,7 +260,7 @@ function sessionFactory(store, guid) {
             var now = Date.now(),
               diff = now - lastSavedTimestamp;
             //expired after two hour
-            console.log("session update time diff(" + diff + "):" + ft(diff));
+            //console.log("session update time diff(" + diff + "):" + ft(diff));
             return diff > expired_duration;
         }
     }
@@ -1154,7 +1154,7 @@ app.config(['$stateProvider', route]);
 },{"user/userController":"user/userController"}],"user/userController":[function(require,module,exports){
 require('service/user');
 
-function userController($scope, userService, msg) {
+function userController($scope, userService) {
     $scope.list = [];
 
     //$scope.gridOptions = {
@@ -1184,7 +1184,7 @@ app.filter('userStatus', [function () {
             }
         }
     }])
-    .controller('userController', ['$scope', 'userService', 'msg', userController]);
+    .controller('userController', ['$scope', 'userService', userController]);
 },{"service/user":"service/user"}],"utility/modal":[function(require,module,exports){
 require('utility/setting');
 

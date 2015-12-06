@@ -14,6 +14,7 @@ require('user/user.config');
 require('dataSource/dataSource.config');
 require('employee/employee.config');
 require('house/house.config');
+require('customer/customer.config');
 
 app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 
@@ -22,7 +23,7 @@ function run($rootScope, $state, auth, setting) {
     $rootScope.setting = setting;
     $rootScope.auth = auth;
 }
-},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","dataSource/dataSource.config":"dataSource/dataSource.config","employee/employee.config":"employee/employee.config","frontend/frontend.config":"frontend/frontend.config","house/house.config":"house/house.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
+},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","customer/customer.config":"customer/customer.config","dashboard/dashboard.config":"dashboard/dashboard.config","dataSource/dataSource.config":"dataSource/dataSource.config","employee/employee.config":"employee/employee.config","frontend/frontend.config":"frontend/frontend.config","house/house.config":"house/house.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
 require('auth/permission');
 require('auth/session');
 require('auth/securityInterceptor');
@@ -385,7 +386,158 @@ app.run = function(method){
 
 window.app = app;
 module.export = app;
-},{}],"dashboard/dashboard.config":[function(require,module,exports){
+},{}],"customer/customer.config":[function(require,module,exports){
+require('customer/customerController');
+
+app.config(['$stateProvider', route]);
+
+function route($stateProvider) {
+    var customer = {
+        name: 'customer',
+        abstract: true,
+        url: '/customer',
+        data: { pageTitle: '客户管理' },
+        template: '<ui-view />'
+    }, customerList = {
+        name: 'customer.list',
+        url: '',
+        parent: customer,
+        data: { pageTitle: '客户列表' },
+        templateUrl: 'modules/customer/customer-list.html',
+        controller: 'customerController'
+    }, customerAdd = {
+        name: 'customer.Add',
+        url: '/add',
+        parent: customer,
+        data: { pageTitle: '新增客户' },
+        templateUrl: 'modules/customer/customer-edit.html',
+        controller: 'customerController'
+    }, customerEdit = {
+        name: 'customer.edit',
+        url: '/edit/:id',
+        parent: customer,
+        data: { pageTitle: '修改客户' },
+        templateUrl: 'modules/customer/customer-edit.html',
+        controller: 'customerController'
+    }, customerEdit = {
+        name: 'customer.detail',
+        url: '/detail/:id',
+        parent: customer,
+        data: { pageTitle: '客户详细' },
+        templateUrl: 'modules/customer/customer-detail.html',
+        controller: 'customerController'
+    }
+    ;
+
+    $stateProvider
+        .state(customer)
+        .state(customerList)
+        .state(customerAdd)
+        .state(customerEdit)
+    ;
+}
+},{"customer/customerController":"customer/customerController"}],"customer/customerController":[function(require,module,exports){
+/**
+ * Created by juym on 2015/11/19.
+ */
+require('filter/customerStatus');
+require('service/customer');
+
+function customerController($scope, $location, $uibModal, hngMsg, customerService) {
+    $scope.loadingState = 0;
+
+    $scope.sampleShow = true;
+    $scope.complexShow = false;
+
+    $scope.quickSearch = function () {
+        $scope.complexShow = !$scope.complexShow;
+        $scope.sampleShow = !$scope.sampleShow;
+    }
+
+    $scope.size = 5;
+    $scope.search = function (pagination) {
+        if (!pagination) {
+            $scope.current = 1;
+        }
+
+        customerService.search($scope.current, $scope.size)
+                   .then(function (result) {
+                       $scope.list = result.data;
+                       $scope.total = result.total;
+                   });
+
+        $scope.chkAll = false;
+    }
+
+    //$scope.save = function () {
+    //    var datasource = {
+    //        Id: 3,
+    //        Code: $scope.model.Code,
+    //        Name: $scope.model.Name,
+    //        Database: $scope.model.Database,
+    //        Product: $scope.model.Product,
+    //        Status: 1
+    //    };
+
+    //    msg.confirm({ text: '是否添加?' }).then(function (ok) {
+    //        if (!ok) {
+    //            return;
+    //        }
+
+    //        $scope.disable = true;
+    //        return customerService.add(datasource);
+    //    }).then(function (result) {
+    //        if (result) {
+    //            $location.path('/reportdatasource');
+    //        }
+    //    });
+    //}
+
+    $scope.search(false);
+
+    $scope.all = function (c, v) {//全选
+        angular.forEach(v, function (chk) {
+            chk.__checked = c;
+        })
+    };
+
+    $scope.removeAll = function () {
+        var data = [];
+
+        angular.forEach($scope.list, function (item) {
+            if (item.__checked) {
+                data.push(item);
+            }
+        });
+
+        if (data.length == 0) {
+            hngMsg.alert('请选择要删除的数据！', '提示');
+            return;
+        }
+
+        customerService.remove(data)
+                         .then(function () {
+                             hngMsg.alert('删除成功');
+                             $scope.search(false);
+                         });
+    }
+
+    $scope.back = function (dirty) {
+        if (dirty) {
+            hngMsg.confirm('当前有未保存的数据， 是否放弃修改？?', '提示')
+                             .then(function (result) {
+                                 if (result) {
+                                     $location.path('/customer');
+                                 }
+                             });
+        } else {
+            $location.path('/customer');
+        }
+    }
+}
+
+app.controller('customerController', ['$scope', '$location', '$uibModal', 'hngMsg', 'customerService', customerController]);
+},{"filter/customerStatus":"filter/customerStatus","service/customer":"service/customer"}],"dashboard/dashboard.config":[function(require,module,exports){
 require('dashboard/dashboardController');
 
 app.config(['$stateProvider', route]);
@@ -684,7 +836,25 @@ function employeeController($scope, employeeService) {
         $scope.list = result;
     });
 }
-},{"service/employee":"service/employee"}],"filter/dataSourceStatus":[function(require,module,exports){
+},{"service/employee":"service/employee"}],"filter/customerStatus":[function(require,module,exports){
+// filters
+app.filter('customerStatus', [customerStatus])
+
+function customerStatus() {
+    return function (value) {
+        switch (value) {
+            case 1:
+                return '有效';
+
+            case 2:
+                return '无效';
+
+            default:
+                return '未知';
+        }
+    }
+}
+},{}],"filter/dataSourceStatus":[function(require,module,exports){
 app.filter('dataSourceStatus', [dataSourceStatus]);
 
 function dataSourceStatus() {
@@ -843,7 +1013,111 @@ function houseController($scope, houseService) {
 
 
 }
-},{"filter/houseStatus":"filter/houseStatus","service/house":"service/house"}],"service/dataSource":[function(require,module,exports){
+},{"filter/houseStatus":"filter/houseStatus","service/house":"service/house"}],"service/customer":[function(require,module,exports){
+function customerService($http, $q) {
+    if (window.sessionStorage.getItem('list') == undefined) {
+        var list = [
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 }, ];
+        window.sessionStorage.setItem('list', JSON.stringify(list));
+    }
+
+    this.search = function (current, size) {
+        var d1 = $q.defer();
+        var d2 = $q.defer();
+
+        setTimeout(function () {
+            var total = JSON.parse(window.sessionStorage.getItem('list')).length;
+            d1.resolve(total);
+        }, 100);
+        setTimeout(function () {
+            var data = [];
+            var $data = JSON.parse(window.sessionStorage.getItem('list'));
+            for (var i = (current - 1) * size; (i < current * size) && (i < $data.length) ; i++) {
+                data.push($data[i]);
+            }
+
+            d2.resolve(data);
+        }, 500);
+
+        return $q.all([d1.promise, d2.promise]).then(function (args) {
+            return {
+                total: args[0],
+                data: args[1]
+            };
+        });
+    };
+
+    this.add = function (datasource) {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            var data = JSON.parse(window.sessionStorage.getItem('list'));
+            data.push(datasource);
+            window.sessionStorage.setItem('list', JSON.stringify(data));
+
+            defer.resolve({
+                success: true,
+                message: '添加成功'
+            });
+        }, 1000);
+
+        return defer.promise;
+    }
+
+    this.remove = function (list) {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            var data = JSON.parse(window.sessionStorage.getItem('list'));
+
+            var current = [],
+                flag;
+            angular.forEach(data, function (item, i) {
+                flag = false;
+                angular.forEach(list, function (toRemove, i) {
+                    if (item.Code == toRemove.Code) {
+                        flag = true;
+                        return false;
+                    }
+                });
+
+                if (!flag) {
+                    current.push(item);
+                }
+            });
+
+
+            window.sessionStorage.setItem('list', JSON.stringify(current));
+
+            defer.resolve({
+                success: true,
+                message: '删除成功'
+            });
+        }, 500);
+
+        return defer.promise;
+    }
+}
+
+app.service('customerService', ['$http', '$q', customerService]);
+
+
+},{}],"service/dataSource":[function(require,module,exports){
 app.service('dataSourceService', ['$http', '$q', dataSourceService]);
 
 function dataSourceService($http, $q) {
@@ -955,7 +1229,8 @@ function menuService($http, $q) {
             {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]},
             { name: '报表管理系统', icon: 'icon-home', menus: [{ name: '数据源管理', url: '#/datasource' }] },
             { name: '职员管理', icon: 'icon-home', menus: [{ name: '职员管理', url: '#/employee' }] },
-            { name: '房源管理系统', icon: 'icon-map',menus:[{name:'房源管理',url:'#/house'}] }
+            { name: '房源管理系统', icon: 'icon-map', menus: [{ name: '房源管理', url: '#/house' }] },
+            { name: '客源管理系统', icon: 'icon-map', menus: [{ name: '客户管理', url: '#/customer' }] }
         ];
 
         var defer = $q.defer();

@@ -1,0 +1,19 @@
+﻿<div class="resum">
+
+</div>
+<form class="form-horizontal" name="datasource">
+    
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-success glyphicon glyphicon-save"
+                    ng-disabled="disable || !datasource.$dirty || datasource.$invalid"
+                    ng-click="save()">
+                修改
+            </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button type="button" class="btn btn-default glyphicon glyphicon-share-alt"
+                    ng-click="back(false)">
+                返回
+            </button>
+        </div>
+    </div>
+</form>

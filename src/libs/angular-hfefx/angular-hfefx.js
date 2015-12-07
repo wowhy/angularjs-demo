@@ -1,12 +1,37 @@
 (function(window, angular){ "use strict";var hngModule = angular.module('hng', ['ngSanitize', 'ui.router', 'ui.bootstrap', 'blockUI']);
 
-hngModule.constant('hngConfig', {
-});
-
-hngModule.service('hngCore', [function () {
-    this.service = {};
-    this.utility = {};
+hngModule.config(['blockUIConfig', function(blockUIConfig){
+    blockUIConfig.message = '请稍等...';
+    // blockUIConfig.autoBlock = false;
 }]);
+
+hngModule.service('hngCore', [
+    'hngAjaxService',
+    'hngRESTfulService',
+    'hngGuid',
+    'hngModal',
+    'hngMsg',
+    'hngLocalStorage',
+    'hngSessionStorage',
+    function (hngAjaxService
+        , hngRESTfulService
+        , hngGuid
+        , hngModal
+        , hngMsg
+        , hngLocalStorage
+        , hngSessionStorage) {
+        this.service = {
+            ajax: hngAjaxService,
+            rest: hngRESTfulService
+        };
+        this.utility = {
+            guid: hngGuid,
+            modal: hngModal,
+            msg: hngMsg,
+            localStorage: hngLocalStorage,
+            sessionStorage: hngSessionStorage
+        };
+    }]);
 ;(function (hngModule) {
     hngModule.directive('hngShowModal', ['hngModal', hngShowModal]);
 
@@ -17,7 +42,7 @@ hngModule.service('hngCore', [function () {
                 hngModalController: '@',
                 hngModalCallback: '&'
             },
-            link: function (scope, element, attrs) {
+            link: function (scope, element/*, attrs*/) {
                 element.on('click', function() {
                     var dialog = hngModal.show(scope.hngModalUrl, scope.hngModalController);
                     if(scope.hngModalCallback){
@@ -29,103 +54,108 @@ hngModule.service('hngCore', [function () {
     }
 })(hngModule);
 ;(function (hngModule) {
-    hngModule.service('hngAjaxService', ['$http', 'blockUI', function ($http, blockUI) {
-        this.AjaxPost = function (route, data, successFunction, errorFunction) {
-            blockUI.start();
-            setTimeout(function () {
-                $http.post(route, data).success(function (response, status, headers, config) {
-                    blockUI.stop();
-                    successFunction(response, status);
-                }).error(function (response) {
-                    blockUI.stop();
-                    if (response.IsAuthenicated == false) {
-                        window.location = "/index.html";
-                    }
-                    errorFunction(response);
-                });
+    hngModule.service('hngAjaxService', ['$http', '$q', 'blockUI', function ($http, $q, blockUI) {
+        this.get = function (url, params, callback) {
+            if (angular.isFunction(params)) {
+                callback = params;
+                params = {};
+            }
 
-            }, 2000);
+            return ajax(url, 'GET', params, callback);
         };
 
-        this.AjaxPostWithNoAuthenication = function (route, data, successFunction, errorFunction) {
+        this.post = function (url, params, callback) {
+            if (angular.isFunction(params)) {
+                callback = params;
+                params = {};
+            }
+
+            return ajax(url, 'POST', params, callback);
+        };
+
+        function ajax(url, method, params, callback) {
             blockUI.start();
-            $http.post(route, data).success(function (response, status, headers, config) {
-                blockUI.stop();
-                successFunction(response, status);
-            }).error(function (response) {
-                blockUI.stop();
-                errorFunction(response);
+
+            var options = {
+                method: method,
+                url: url
+            };
+
+            options[method == 'POST' ? 'data' : 'params'] = params;
+
+            var defer = $q.defer();
+            $http(options).then(function (res) {
+                var result = isHngResultLike(res.data) ? res.data : {
+                    success: true,
+                    data: res.data,
+                    message: '操作成功!'
+                };
+                defer.resolve(result);
+            }, function (res) {
+                var result = isHngResultLike(res.data) ? res.data : {
+                    success: false,
+                    status: res.status,
+                    data: angular.isObject(res.data) ? res.data : null,
+                    message : formatError(res.status)
+                };
+
+                defer.resolve(result);
             });
-        };
 
-        this.AjaxGet = function (route, successFunction, errorFunction) {
-            blockUI.start();
-            setTimeout(function () {
-                $http({method: 'GET', url: route}).success(function (response, status, headers, config) {
-                    blockUI.stop();
-                    successFunction(response, status);
-                }).error(function (response) {
-                    blockUI.stop();
-                    if (response.IsAuthenicated == false) {
-                        window.location = "/index.html";
-                    }
-                    errorFunction(response);
-                });
-            }, 2000);
-        };
-
-        this.AjaxGetWithData = function (route, data, successFunction, errorFunction) {
-            blockUI.start();
-            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
+            return defer.promise.then(function (result) {
                 blockUI.stop();
-                successFunction(response, status);
-            }).error(function (response) {
-                blockUI.stop();
-                if (response.IsAuthenicated == false) {
-                    window.location = "/index.html";
+                if (angular.isFunction(callback)) {
+                    callback(result);
                 }
-                errorFunction(response);
-            });
-        };
 
-        this.AjaxGetWithNoBlock = function (route, data, successFunction, errorFunction) {
-            $http({method: 'GET', url: route, params: data}).success(function (response, status, headers, config) {
-                successFunction(response, status);
-            }).error(function (response) {
-                ;
-                if (response.IsAuthenicated == false) {
-                    window.location = "/index.html";
-                }
-                errorFunction(response);
+                return result;
             });
+        }
+
+        function formatError(status) {
+            switch (status) {
+                case 404:
+                    return '未找到相关操作或资源!';
+                case 405:
+                    return '服务器不允许此操作!';
+            }
+
+            return '服务器发生未知错误!';
+        }
+
+        function isHngResultLike(result) {
+            return angular.isObject(result) &&
+                (
+                    result.success !== undefined
+                    && (result.data !== undefined || result.message !== undefined)
+                );
         }
     }]);
 })(hngModule);
 ;(function (hngModule) {
     hngModule.service('hngRESTfulService', ['$http', '$q', hngRESTfulService]);
 
-    function serializeOrder(order){
-        return order;
-    }
-
-    function serializeFilter(filter){
-        return filter;
-    }
-
     function hngRESTfulService($http, $q) {
         var service = this;
 
-        service.createModelProxy = function (api, model, v) {
-            var url = api
-                + (api.lastIndexOf('/') == api.length - 1 ? '' : '/')
-                + (v ? '/' + v + '/' : '')
-                + model;
+        service.createModelProxy = function (api, model, opt) {
+            opt = opt || {};
 
-            return new modelProxy(url);
+            var v = opt.v,
+                auth = opt.auth;
+
+            if (api.lastIndexOf('/') !== api.length - 1) {
+                api += '/';
+            }
+
+            v = v ? (v + '/') : '';
+
+            var url = format('%1%2%3', api, v, model);
+            return new modelProxy(url, auth);
         };
 
         service.get = function (url, params, headers) {
-            return $http({method: 'GET', url: url, data: params, headers: headers});
+            return $http({method: 'GET', url: url, params: params, headers: headers});
         };
         service.post = function (url, params, headers) {
             return $http({method: 'POST', url: url, data: params, headers: headers});
@@ -140,13 +170,18 @@ hngModule.service('hngCore', [function () {
             return $http({method: 'DELETE', url: url, params: params, headers: headers});
         };
 
-        function modelProxy(api) {
-            var headers = {},
+        function modelProxy(api, auth) {
+            var headers = {
+                    Authorization: auth
+                },
                 me = this;
 
-            function getModelUrl(api, id){
-                return api + '/' + id;
-            }
+            var getUrl = api + '(%1)',
+                deleteUrl = api + '(%1)',
+                updateUrl = api + '(%1)',
+                createUrl = api,
+                allUrl = api,
+                queryUrl = api;
 
             /**
              * @description
@@ -158,8 +193,7 @@ hngModule.service('hngCore', [function () {
              * @returns {promise} 结果
              */
             me.get = function (id) {
-                var url = getModelUrl(api, id);
-                var ajax = service.get(url, {}, headers).then(function (res) {
+                var ajax = service.get(format(getUrl, id), {}, headers).then(function (res) {
                     return {
                         success: true,
                         data: (angular.isObject(res) ? res.data : res)
@@ -168,7 +202,7 @@ hngModule.service('hngCore', [function () {
                     return {
                         status: res.status,
                         success: false,
-                        message: res.data
+                        data: res.data
                     };
                 });
 
@@ -188,11 +222,9 @@ hngModule.service('hngCore', [function () {
              * @returns {promise}
              */
             me.all = function (order, filter) {
-                var url = api;
-                var ajax = service.get(url, {
-                    order: serializeOrder(order),
-                    filter: serializeFilter(filter)
-                }, headers).then(function (res) {
+                var ajax = service.get(allUrl
+                    , new queryOption().setOrder(order).setFilter(filter)
+                    , headers).then(function (res) {
                     return {
                         success: true,
                         data: res.data
@@ -201,7 +233,7 @@ hngModule.service('hngCore', [function () {
                     return {
                         status: res.status,
                         success: false,
-                        message: res.data
+                        data: res.data
                     };
                 });
 
@@ -223,23 +255,18 @@ hngModule.service('hngCore', [function () {
              * @returns {promise}
              */
             me.query = function (page, limit, order, filter) {
-                var url = api;
-                var ajax = service.get(url, {
-                    page: page,
-                    limit: limit,
-                    order: serializeOrder(order),
-                    filter: serializeFilter(filter)
-                }, headers).then(function (res) {
-                    return {
-                        success: true,
-                        data: res.data
-                    };
+                var ajax = service.get(queryUrl
+                    , new queryOption(page, limit, order, filter)
+                    , headers).then(function (res) {
+                    return handleQueryResult(res.data);
                 }, function (res) {
-                    return {
-                        status: res.status,
+                    var result = isHngResultLike(res.data) ? res.data : {
                         success: false,
-                        message: res.data
+                        status: res.status,
+                        data: angular.isObject(res.data) ? res.data : null
                     };
+
+                    return result;
                 });
 
                 return $q.all([ajax]).then(function (res) {
@@ -257,8 +284,7 @@ hngModule.service('hngCore', [function () {
              * @returns {promise}
              */
             me.create = function (model) {
-                var url = api;
-                var ajax = service.post(url, model, headers).then(function (res) {
+                var ajax = service.post(createUrl, model, headers).then(function (res) {
                     return {
                         success: true,
                         data: res.data
@@ -267,7 +293,7 @@ hngModule.service('hngCore', [function () {
                     return {
                         status: res.status,
                         success: false,
-                        message: res.data
+                        data: res.data
                     };
                 });
 
@@ -286,8 +312,9 @@ hngModule.service('hngCore', [function () {
              * @returns {promise}
              */
             me.update = function (model) {
-                var url = getModelUrl(api, model.Id);
-                var ajax = service.post(url, model, headers).then(function (res) {
+                var ajax = service.post(format(updateUrl, model.Id)
+                    , model
+                    , headers).then(function (res) {
                     return {
                         success: true,
                         data: res.data
@@ -296,7 +323,7 @@ hngModule.service('hngCore', [function () {
                     return {
                         status: res.status,
                         success: false,
-                        message: res.data
+                        data: res.data
                     };
                 });
 
@@ -315,8 +342,9 @@ hngModule.service('hngCore', [function () {
              * @returns {promise}
              */
             me.delete = function (id) {
-                var url = getModelUrl(api, model.Id);
-                var ajax = service.delete(url, model, headers).then(function (res) {
+                var ajax = service.delete(format(deleteUrl, id)
+                    , model
+                    , headers).then(function (res) {
                     return {
                         success: true,
                         data: res.data
@@ -325,7 +353,7 @@ hngModule.service('hngCore', [function () {
                     return {
                         status: res.status,
                         success: false,
-                        message: res.data
+                        data: res.data
                     };
                 });
 
@@ -333,7 +361,75 @@ hngModule.service('hngCore', [function () {
                     return res[0];
                 });
             };
+
+            function queryOption(page, limit, order, filter) {
+                if (arguments.length) {
+                    if (angular.isNumber(page)) {
+                        if (!angular.isNumber(limit)) {
+                            filter = order;
+                            order = limit;
+                            limit = 10;
+                        }
+
+                        this.setPage(page, limit)
+                            .setOrder(order)
+                            .setFilter(filter);
+                    } else {
+                        // otherwise
+                    }
+                }
+            }
+
+            queryOption.prototype = {
+                setPage: function (page, limit) {
+                    this.$skip = (page - 1) * limit;
+                    this.$top = limit;
+                    return this;
+                },
+                setOrder: function (order) {
+                    if (order) {
+                        this.$order = serializeOrder(order);
+                    }
+
+                    return this;
+                },
+                setFilter: function (filter) {
+                    if (filter) {
+                        this.$filter = serializeFilter(filter);
+                    }
+
+                    return this;
+                }
+            };
+
+            function handleQueryResult(result) {
+                if (isHngResultLike(result)) {
+                    return result;
+                }
+
+                return {
+                    success: true,
+                    message: '操作成功!',
+                    data: result.value
+                };
+            }
         }
+    }
+
+    function format(string) {
+        var args = arguments;
+        var pattern = new RegExp("%([1-" + arguments.length + "])", "g");
+        return String(string).replace(pattern, function (match, index) {
+            return args[index];
+        });
+    }
+
+    function isHngResultLike(result) {
+        return angular.isObject(result) &&
+            (
+                result.success !== undefined
+                && (result.data !== undefined || result.message !== undefined)
+            );
     }
 })(hngModule);
 ;(function (hngModule) {
@@ -371,7 +467,7 @@ hngModule.service('hngCore', [function () {
          * @param {Object} 窗口传递参数
          * @returns {dialog}
          */
-        modal.show = function (url, controller, hngArgs, options) {
+        modal.show = function (url, controller, args, options) {
             options = options || {size: 'md'};
 
             var dialogOptions = angular.extend(options, {
@@ -381,8 +477,11 @@ hngModule.service('hngCore', [function () {
                 backdrop: 'static',
                 keyboard: false,
                 resolve: {
-                    hngArgs: function () {
-                        return hngArgs;
+                    $routeParams: function(){
+                        return args;
+                    },
+                    $stateParams: function () {
+                        return args;
                     }
                 }
             });

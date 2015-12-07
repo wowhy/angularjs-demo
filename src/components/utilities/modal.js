@@ -1,6 +1,6 @@
 require('utility/setting');
 
-function modalFactory($uibModal, setting){
+function modalFactory($uibModal, $rootScope, $uibModalStack){
     var modal = {};
 
     modal.show = function(templateUrl, controller, size){
@@ -13,7 +13,11 @@ function modalFactory($uibModal, setting){
         return dialog.result;
     };
 
+    $rootScope.$on('$stateChangeSuccess', function () {
+        $uibModalStack.dismissAll();
+    });
+
     return modal;
 }
 
-app.factory('modal', ['$uibModal', modalFactory]);
+app.factory('modal', ['$uibModal', '$rootScope', '$uibModalStack', modalFactory]);

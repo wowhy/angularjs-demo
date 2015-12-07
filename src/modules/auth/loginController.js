@@ -1,17 +1,11 @@
-require('service/user');
+require('auth/auth');
+require('utility/modal');
 
-function loginController($scope, $state, userService, setting) {
-    $scope.login = function () {
-        userService.login($scope.username, $scope.password)
-            .then(function (result) {
-                if (result.success) {
-                    setting.layout.path = 'modules/backend/layout/index.html';
-                    $state.go('dashboard', {});
-                } else {
-                    alert(result.message);
-                }
-            });
-    }
+app.controller('loginController', [
+    '$scope', 'auth', loginController
+]);
+
+function loginController($scope, auth) {
+    auth.showLoginModal();
 }
 
-app.controller('loginController', ['$scope', '$state', 'userService', 'setting', loginController]);

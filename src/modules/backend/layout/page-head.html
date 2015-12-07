@@ -1,0 +1,14 @@
+﻿<div class="row">
+    <ol class="breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="#/dashboard">仪表板</a>
+        </li>
+        <li ng-if="$state.current.parent">
+            <a ng-href="#{{$state.current.parent.url}}">{{$state.current.parent.data.pageTitle}}</a>
+        </li>
+        <li>
+            <span>{{$state.current.data.pageTitle}}</span>
+        </li>
+    </ol>
+</div>

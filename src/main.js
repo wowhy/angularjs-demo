@@ -10,31 +10,34 @@ require('frontend/frontend.config');
 require('auth/auth.config');
 require('backend/backend.config');
 require('dashboard/dashboard.config');
+require('user/user.config');
+require('dataSource/dataSource.config');
+require('employee/employee.config');
+require('house/house.config');
+require('customer/customer.config');
 
-app.run(['$rootScope', '$state', 'setting', '$uibModalStack', run]);
+app.run(['$rootScope', '$state', 'auth', 'setting',run]);
 
-function run($rootScope, $state, setting, $uibModalStack) {
+function run($rootScope, $state, auth, setting) {
     $rootScope.$state = $state;
     $rootScope.setting = setting;
-
-    $rootScope.$on('$stateChangeSuccess', function () {
-        $uibModalStack.dismissAll();
-    });
+    $rootScope.auth = auth;
 }
-},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","dashboard/dashboard.config":"dashboard/dashboard.config","frontend/frontend.config":"frontend/frontend.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
+},{"auth/auth.config":"auth/auth.config","backend/backend.config":"backend/backend.config","core":"core","customer/customer.config":"customer/customer.config","dashboard/dashboard.config":"dashboard/dashboard.config","dataSource/dataSource.config":"dataSource/dataSource.config","employee/employee.config":"employee/employee.config","frontend/frontend.config":"frontend/frontend.config","house/house.config":"house/house.config","user/user.config":"user/user.config","utility/setting":"utility/setting"}],"auth/auth.config":[function(require,module,exports){
 require('auth/permission');
 require('auth/session');
 require('auth/securityInterceptor');
+require('auth/auth');
+require('auth/loginController');
 
 app.config(['$stateProvider', route])
-   .run(['$rootScope', loginInterceptor]);
+   .run(['$rootScope', '$state', '$location', 'auth', 'session', 'setting', loginInterceptor]);
 
 
 function route($stateProvider) {
     $stateProvider
         .state('login', {
             url: '/login',
-            templateUrl: 'modules/auth/login.html',
             data: {pageTitle: '登录', pageSubTitle: ''},
             controller: 'loginController'
         })
@@ -46,30 +49,127 @@ function route($stateProvider) {
     ;
 }
 
-function loginInterceptor($rootScope){
+function loginInterceptor($rootScope, $state, $location, auth, session, setting){
     $rootScope.$on('$stateChangeStart',
         function (event, toState/*, toParams, fromState, fromParams*/) {
+            if(toState.name == 'frontend'||
+               toState.name == 'register') {
+                setting.layout.path = 'modules/frontend/index.html';
+                return;
+            }
+
+            if(toState.name == 'login'){
+                setting.layout.path = 'modules/frontend/index.html';
+                session.clear();
+            }else {
+                if (!!toState.skipAuth) {
+                    setting.layout.path = 'modules/frontend/index.html';
+                    return;
+                }
+
+                setting.layout.path = 'modules/backend/layout/index.html';
+
+                if (!auth.isLogin()) {
+                    setTimeout(function () {
+                        $state.go('login');
+                    }, 0);
+                    event.preventDefault();
+                    return;
+                }
+
+                // check permission
+                // todo
+            }
         });
+
+    $rootScope.$on('$stateChangeSuccess', function(){
+        if($location.search().popup) {
+            angular.element('body').addClass('popup');
+        }
+    });
+
+    $rootScope.$watch(function(){
+        return session.sessionId;
+    }, function(){
+        // todo
+    });
 }
-},{"auth/permission":"auth/permission","auth/securityInterceptor":"auth/securityInterceptor","auth/session":"auth/session"}],"auth/loginController":[function(require,module,exports){
+},{"auth/auth":"auth/auth","auth/loginController":"auth/loginController","auth/permission":"auth/permission","auth/securityInterceptor":"auth/securityInterceptor","auth/session":"auth/session"}],"auth/auth":[function(require,module,exports){
+require('auth/session');
 require('service/user');
 
-function loginController($scope, $state, userService, setting) {
-    $scope.login = function () {
-        userService.login($scope.username, $scope.password)
-            .then(function (result) {
-                if (result.success) {
-                    setting.layout.path = 'modules/backend/layout/index.html';
-                    $state.go('dashboard', {});
-                } else {
-                    alert(result.message);
-                }
-            });
+app.factory('auth', ['$q', '$state', 'session', 'userService', 'modal', authenticator]);
+
+function authenticator($q, $state, session, userService, modal) {
+    var auth = {
+        getUserName: function () {
+            return session.username;
+        },
+        login: loginUser,
+        logout: logoutUser,
+        isLogin: function () {
+            return !!session.sessionId;
+        },
+        showLoginModal: function () {
+            modal.show('modules/auth/login.html', [
+                    '$scope', '$state', 'setting', function ($scope, $state, setting) {
+                        $scope.login = function () {
+                            auth.login($scope.username, $scope.password)
+                                .then(function (result) {
+                                    if (result.success) {
+                                        setting.layout.path = 'modules/backend/layout/index.html';
+                                        $state.go('dashboard', {});
+                                    } else {
+                                        alert(result.message);
+                                    }
+                                });
+                        };
+                    }
+                ],
+                'login'
+            )
+            ;
+        }
+    };
+    return auth;
+
+    function loginUser(username, password) {
+        var defer = $q.defer();
+
+        username === password;
+
+        session.set({
+            username: username
+        });
+
+        defer.resolve({
+            success: true,
+            message: '登录成功'
+        });
+
+        auth.username = username;
+
+        return defer.promise;
+    }
+
+    function logoutUser() {
+        $state.go('login');
     }
 }
+},{"auth/session":"auth/session","service/user":"service/user"}],"auth/loginController":[function(require,module,exports){
+require('auth/auth');
+require('utility/modal');
 
-app.controller('loginController', ['$scope', '$state', 'userService', 'setting', loginController]);
-},{"service/user":"service/user"}],"auth/permission":[function(require,module,exports){
+app.controller('loginController', [
+    '$scope', 'auth', loginController
+]);
+
+function loginController($scope, auth) {
+    auth.showLoginModal();
+}
+
+
+},{"auth/auth":"auth/auth","utility/modal":"utility/modal"}],"auth/permission":[function(require,module,exports){
 
 },{}],"auth/securityInterceptor":[function(require,module,exports){
 app.factory('securityInterceptor', ['$q', '$injector', securityInterceptor])
@@ -92,15 +192,13 @@ function securityInterceptor($q, $injector) {
     return responseInterceptor;
 }
 },{}],"auth/session":[function(require,module,exports){
-require('utility/store');
-
 var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',
     expired_duration = 1000 * 60 * 120; // 2 hours
 
-app.factory('session', ['localStore', sessionFactory]);
+app.factory('session', ['hngLocalStorage', 'hngGuid', sessionFactory]);
 
-function sessionFactory(store) {
+function sessionFactory(store, guid) {
     var _session = {
         sessionId: null,
         username: '',
@@ -125,8 +223,6 @@ function sessionFactory(store) {
                 _syncSession(storedSession || {});
             }
         }
-        console.log('[Init Session]');
-        console.log(_session);
     }
 
     function onClear() {
@@ -139,7 +235,7 @@ function sessionFactory(store) {
     }
 
     function onSet(opts) {
-        opts.sessionId = createGuid();
+        opts.sessionId = guid.newGuid();
         _syncSession(opts); //将opts的数据设置到session中并保存在localStorage
 
         store.set(session_key, opts);
@@ -151,12 +247,12 @@ function sessionFactory(store) {
     }
 
     function isExpired() {
-        function ft(num) {
-            if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
-            if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
-            if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
-            return num;
-        }
+        //function ft(num) {
+        //    if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
+        //    if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
+        //    if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
+        //    return num;
+        //}
         if (!store.enabled) return true;
         var lastSavedTimestamp = store.get(session_timestamp_key);
         if (!lastSavedTimestamp) { // has not save any data yet
@@ -165,7 +261,7 @@ function sessionFactory(store) {
             var now = Date.now(),
               diff = now - lastSavedTimestamp;
             //expired after two hour
-            console.log("session update time diff(" + diff + "):" + ft(diff));
+            //console.log("session update time diff(" + diff + "):" + ft(diff));
             return diff > expired_duration;
         }
     }
@@ -190,25 +286,27 @@ function sessionFactory(store) {
         store.remove(session_timestamp_key);
     }
 }
-},{"utility/store":"utility/store"}],"backend/adminController":[function(require,module,exports){
+},{}],"backend/backend.config":[function(require,module,exports){
+/**
+ * Created by hongyuan on 2015/11/16.
+ */
+
+// 引用依赖模块，配置路由
+
+require('utility/setting');
+require('backend/backendController');
+},{"backend/backendController":"backend/backendController","utility/setting":"utility/setting"}],"backend/backendController":[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/13.
  */
-require('utility/msg');
 require('service/menu');
 require('directive/spinnerBar');
 require('directive/pageSidebar');
 
-function headerController($scope, $location, userService, setting){
+function headerController($scope, setting){
     $scope.toggleSidebar = function(){
         setting.layout.pageSidebarClosed = !setting.layout.pageSidebarClosed;
     };
-
-    $scope.logout = function(){
-        userService.logout().then(function(){
-            $location.path('/');
-        });
-    }
 }
 
 function navbarController($scope, menuService) {
@@ -220,18 +318,9 @@ function navbarController($scope, menuService) {
         });
 }
 
-app.controller('headerController', ['$scope', '$location', 'userService', 'setting', headerController])
+app.controller('headerController', ['$scope', 'setting', headerController])
    .controller('navbarController', ['$scope', 'menuService', navbarController]);
-},{"directive/pageSidebar":"directive/pageSidebar","directive/spinnerBar":"directive/spinnerBar","service/menu":"service/menu","utility/msg":"utility/msg"}],"backend/backend.config":[function(require,module,exports){
-/**
- * Created by hongyuan on 2015/11/16.
- */
-
-// 引用依赖模块，配置路由
-
-require('utility/setting');
-require('backend/adminController');
-},{"backend/adminController":"backend/adminController","utility/setting":"utility/setting"}],"core":[function(require,module,exports){
+},{"directive/pageSidebar":"directive/pageSidebar","directive/spinnerBar":"directive/spinnerBar","service/menu":"service/menu"}],"core":[function(require,module,exports){
 /**
  * Created by hongyuan on 2015/11/16.
  */
@@ -242,13 +331,14 @@ require('backend/adminController');
 // require('../libs/angular-bootstrap/ui-bootstrap-tpls');
 // require('../libs/angular-ui-grid/ui-grid');
 
-var utilities = angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
-var services = angular.module('example.service', ['example.utility']);
-var directives = angular.module('example.directive', ['example.utility']);
-var filters = angular.module('example.filters', ['example.utility']);
+var utilities = angular.module('example.utility', ['hng', 'ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
+var services = angular.module('example.service', ['hng', 'example.utility']);
+var directives = angular.module('example.directive', ['hng', 'example.utility']);
+var filters = angular.module('example.filters', ['hng', 'example.utility']);
 var example = angular.module('example', [
     'example.directive',
     'example.service',
+    'example.filters',
     'example.utility',
     'ngLocale',
     'ngTouch',
@@ -296,7 +386,158 @@ app.run = function(method){
 
 window.app = app;
 module.export = app;
-},{}],"dashboard/dashboard.config":[function(require,module,exports){
+},{}],"customer/customer.config":[function(require,module,exports){
+require('customer/customerController');
+
+app.config(['$stateProvider', route]);
+
+function route($stateProvider) {
+    var customer = {
+        name: 'customer',
+        abstract: true,
+        url: '/customer',
+        data: { pageTitle: '客户管理' },
+        template: '<ui-view />'
+    }, customerList = {
+        name: 'customer.list',
+        url: '',
+        parent: customer,
+        data: { pageTitle: '客户列表' },
+        templateUrl: 'modules/customer/customer-list.html',
+        controller: 'customerController'
+    }, customerAdd = {
+        name: 'customer.Add',
+        url: '/add',
+        parent: customer,
+        data: { pageTitle: '新增客户' },
+        templateUrl: 'modules/customer/customer-edit.html',
+        controller: 'customerController'
+    }, customerEdit = {
+        name: 'customer.edit',
+        url: '/edit/:id',
+        parent: customer,
+        data: { pageTitle: '修改客户' },
+        templateUrl: 'modules/customer/customer-edit.html',
+        controller: 'customerController'
+    }, customerEdit = {
+        name: 'customer.detail',
+        url: '/detail/:id',
+        parent: customer,
+        data: { pageTitle: '客户详细' },
+        templateUrl: 'modules/customer/customer-detail.html',
+        controller: 'customerController'
+    }
+    ;
+
+    $stateProvider
+        .state(customer)
+        .state(customerList)
+        .state(customerAdd)
+        .state(customerEdit)
+    ;
+}
+},{"customer/customerController":"customer/customerController"}],"customer/customerController":[function(require,module,exports){
+/**
+ * Created by juym on 2015/11/19.
+ */
+require('filter/customerStatus');
+require('service/customer');
+
+function customerController($scope, $location, $uibModal, hngMsg, customerService) {
+    $scope.loadingState = 0;
+
+    $scope.sampleShow = true;
+    $scope.complexShow = false;
+
+    $scope.quickSearch = function () {
+        $scope.complexShow = !$scope.complexShow;
+        $scope.sampleShow = !$scope.sampleShow;
+    }
+
+    $scope.size = 5;
+    $scope.search = function (pagination) {
+        if (!pagination) {
+            $scope.current = 1;
+        }
+
+        customerService.search($scope.current, $scope.size)
+                   .then(function (result) {
+                       $scope.list = result.data;
+                       $scope.total = result.total;
+                   });
+
+        $scope.chkAll = false;
+    }
+
+    //$scope.save = function () {
+    //    var datasource = {
+    //        Id: 3,
+    //        Code: $scope.model.Code,
+    //        Name: $scope.model.Name,
+    //        Database: $scope.model.Database,
+    //        Product: $scope.model.Product,
+    //        Status: 1
+    //    };
+
+    //    msg.confirm({ text: '是否添加?' }).then(function (ok) {
+    //        if (!ok) {
+    //            return;
+    //        }
+
+    //        $scope.disable = true;
+    //        return customerService.add(datasource);
+    //    }).then(function (result) {
+    //        if (result) {
+    //            $location.path('/reportdatasource');
+    //        }
+    //    });
+    //}
+
+    $scope.search(false);
+
+    $scope.all = function (c, v) {//全选
+        angular.forEach(v, function (chk) {
+            chk.__checked = c;
+        })
+    };
+
+    $scope.removeAll = function () {
+        var data = [];
+
+        angular.forEach($scope.list, function (item) {
+            if (item.__checked) {
+                data.push(item);
+            }
+        });
+
+        if (data.length == 0) {
+            hngMsg.alert('请选择要删除的数据！', '提示');
+            return;
+        }
+
+        customerService.remove(data)
+                         .then(function () {
+                             hngMsg.alert('删除成功');
+                             $scope.search(false);
+                         });
+    }
+
+    $scope.back = function (dirty) {
+        if (dirty) {
+            hngMsg.confirm('当前有未保存的数据， 是否放弃修改？?', '提示')
+                             .then(function (result) {
+                                 if (result) {
+                                     $location.path('/customer');
+                                 }
+                             });
+        } else {
+            $location.path('/customer');
+        }
+    }
+}
+
+app.controller('customerController', ['$scope', '$location', '$uibModal', 'hngMsg', 'customerService', customerController]);
+},{"filter/customerStatus":"filter/customerStatus","service/customer":"service/customer"}],"dashboard/dashboard.config":[function(require,module,exports){
 require('dashboard/dashboardController');
 
 app.config(['$stateProvider', route]);
@@ -317,7 +558,174 @@ function dashboardController($scope) {
 }
 
 app.controller('dashboardController', ['$scope', dashboardController]);
-},{}],"directive/pageSidebar":[function(require,module,exports){
+},{}],"dataSource/dataSource.config":[function(require,module,exports){
+require('dataSource/dataSourceController');
+require('dataSource/dataSourceEditController');
+require('dataSource/dataSourceDetailController');
+
+app.config(['$stateProvider', route]);
+
+function route($stateProvider) {
+    var dataSource = {
+            name: 'dataSource',
+            abstract: true,
+            url: '/datasource',
+            data: {pageTitle: '数据源管理'},
+            template: '<ui-view />'
+        }, dataSourceList = {
+            name: 'list',
+            url: '',
+            parent: dataSource,
+            data: { pageTitle: '列表' },
+            templateUrl: 'modules/datasource/list.html',
+            controller: 'dataSourceController'
+        }, dataSourceAdd = {
+            name: 'add',
+            url: '/add',
+            parent: dataSource,
+            data: { pageTitle: '新建' },
+            templateUrl: 'modules/datasource/edit.html',
+            controller: 'dataSourceEditController'
+        }, dataSourceEdit = {
+            name: 'edit',
+            url: '/edit/:id',
+            parent: dataSource,
+            data: { pageTitle: '修改' },
+            templateUrl: 'modules/datasource/edit.html',
+            controller: 'dataSourceEditController'
+        }, dataSourceDetail = {
+            name: 'detail',
+            url: '/detail/:id',
+            parent: dataSource,
+            data: { pageTitle: '详细' },
+            templateUrl: 'modules/datasource/detail.html',
+            controller: 'dataSourceDetailController'
+        }
+        ;
+
+    $stateProvider
+        .state(dataSource)
+        .state(dataSourceList)
+        .state(dataSourceAdd)
+        .state(dataSourceEdit)
+        .state(dataSourceDetail)
+    ;
+}
+},{"dataSource/dataSourceController":"dataSource/dataSourceController","dataSource/dataSourceDetailController":"dataSource/dataSourceDetailController","dataSource/dataSourceEditController":"dataSource/dataSourceEditController"}],"dataSource/dataSourceController":[function(require,module,exports){
+require('filter/dataSourceStatus');
+require('service/dataSource');
+
+app.controller('dataSourceController', ['$scope', 'dataSourceService', 'hngMsg', 'hngModal', dataSourceController]);
+
+function dataSourceController($scope, dataSourceService, hngMsg, hngModal) {
+    $scope.current = 1;
+    $scope.pageSize = 10;
+
+    // 分页
+    $scope.pagination = function () {
+        dataSourceService.search($scope.current, $scope.pageSize)
+            .then(function (result) {
+                $scope.total = result.total;
+                $scope.data = result.data;
+            });
+    };
+
+    // 全部选择/取消全选
+    $scope.toggleCheckAll = function ($event) {
+        var checked = $event.target.checked;
+        angular.forEach($scope.data, function (item) {
+            item.__checked = checked;
+        });
+    };
+
+    // 当前选择数据
+    $scope.selection = function () {
+        var selection = [];
+
+        angular.forEach($scope.data, function (item) {
+            if (item.__checked)
+                selection.push(item);
+        });
+
+        return selection;
+    };
+
+    $scope.remove = function (items) {
+        if (!angular.isArray(items)) {
+            items = [].push(items);
+        }
+
+        if (!items.length) {
+            return;
+        }
+
+        hngMsg.confirm('是否删除当前选择项？')
+            .then(function (result) {
+                if (result) {
+                    var total = items.length;
+                    var $progress = hngMsg.progress('正在删除...', total);
+
+                    var progress = function (result) {
+                        if (result.success) {
+                            $progress.increment('success');
+                        }
+                        else {
+                            $progress.increment('danger');
+                        }
+
+                        return doRemove();
+                    };
+
+                    var doRemove = function () {
+                        if (items.length) {
+                            return dataSourceService.removeById(items.pop().Id).then(progress);
+                        }
+                        /*else {
+                         $progress.complete();
+                         // $scope.pagination();
+                         }*/
+                    };
+
+                    $progress.result.then(function () {
+                        return hngMsg.alert(
+                            '删除成功: ' + $progress.getValue('success') +
+                            '删除失败: ' + $progress.getValue('danger'));
+                    }).then(function () {
+                        $scope.pagination();
+                    });
+                    return doRemove();
+                }
+            });
+    };
+
+    $scope.pagination();
+
+    $scope.add = function () {
+        var dialog = hngModal.show('modules/dataSource/edit.html', 'dataSourceEditController', {});
+        dialog.closed.then(function (result) {
+            if (result) {
+                $scope.pagination();
+            }
+        });
+    };
+}
+},{"filter/dataSourceStatus":"filter/dataSourceStatus","service/dataSource":"service/dataSource"}],"dataSource/dataSourceDetailController":[function(require,module,exports){
+require('filter/dataSourceStatus');
+require('service/dataSource');
+
+app.controller('dataSourceDetailController', ['$scope', 'dataSourceService', 'hngMsg', dataSourceDetailController]);
+
+function dataSourceDetailController($scope, dataSourceService, hngMsg) {
+}
+},{"filter/dataSourceStatus":"filter/dataSourceStatus","service/dataSource":"service/dataSource"}],"dataSource/dataSourceEditController":[function(require,module,exports){
+require('filter/dataSourceStatus');
+require('service/dataSource');
+
+app.controller('dataSourceEditController', ['$scope', 'dataSourceService', 'hngMsg', dataSourceEditController]);
+
+function dataSourceEditController($scope, dataSourceService, hngMsg) {
+}
+},{"filter/dataSourceStatus":"filter/dataSourceStatus","service/dataSource":"service/dataSource"}],"directive/pageSidebar":[function(require,module,exports){
 require('utility/setting');
 
 function uiPageSidebar() {
@@ -341,7 +749,7 @@ function uiPageSidebarMenu(setting) {
                     return;
                 }
 
-                var slideSpeed = parseInt(attrs.slideSpeed);
+                var slideSpeed = 200;
 
                 if (sub.is(":visible")) {
                     $('.arrow', $(this)).removeClass("open");
@@ -389,6 +797,107 @@ function uiSpinnerBar($rootScope) {
 }
 
 app.directive('uiSpinnerBar', ['$rootScope', uiSpinnerBar]);
+},{}],"employee/employee.config":[function(require,module,exports){
+require('employee/employeeController');
+
+app.config(['$stateProvider', router]);
+
+function router($stateProvider) {
+    $stateProvider.state('employee', {
+        url:'/employee',
+        data:{ pageTitle:'职员管理',pageSubTitle:'列表'},
+        templateUrl:'modules/employee/list.html',
+        controller:'employeeController'
+    });
+}
+},{"employee/employeeController":"employee/employeeController"}],"employee/employeeController":[function(require,module,exports){
+require('service/employee');
+
+app.controller('employeeController', ['$scope', 'employeeService', employeeController]);
+
+function employeeController($scope, employeeService) {
+
+    /* 在控制直接数据绑定
+	var data = [
+		{ Code: 'aaaakkkkd', Name: '家电及', Gander: '1', Age: '32',Status:'1' },
+		{ Code: 'fgf', Name: '味儿', Gander: '1', Age: '12', Status: '1' },
+		{ Code: 'fg', Name: '二五二', Gander: '2', Age: '2', Status: '0' },
+		{ Code: 'hjk', Name: '我里', Gander: '2', Age: '12', Status: '1' },
+		{ Code: 'hj', Name: '玩儿', Gander: '2', Age: '32', Status: '1' },
+		{ Code: 'rty', Name: '金坷垃', Gander: '0', Age: '56', Status: '0' },
+		{ Code: 'uio', Name: '水电费', Gander: '0', Age: '98', Status: '0' },
+	];
+
+	$scope.list = data;
+    */
+
+    //使用服务绑定数据
+    employeeService.search(1, 1).then(function (result) {
+        $scope.list = result;
+    });
+}
+},{"service/employee":"service/employee"}],"filter/customerStatus":[function(require,module,exports){
+// filters
+app.filter('customerStatus', [customerStatus])
+
+function customerStatus() {
+    return function (value) {
+        switch (value) {
+            case 1:
+                return '有效';
+
+            case 2:
+                return '无效';
+
+            default:
+                return '未知';
+        }
+    }
+}
+},{}],"filter/dataSourceStatus":[function(require,module,exports){
+app.filter('dataSourceStatus', [dataSourceStatus]);
+
+function dataSourceStatus() {
+    return function (value) {
+        switch (value) {
+            case 1:
+                return '有效';
+
+            default:
+                return '未知';
+        }
+    }
+}
+},{}],"filter/houseStatus":[function(require,module,exports){
+app.filter('houseStatus', [houseStatus]);
+app.filter('houseType', [houseType]);
+
+function houseStatus() {
+    return function (value)
+    {
+        switch (value) {
+            case 1:
+                return '有效';
+            case 2:
+                return '无效';
+            case 3:
+                return '已售';
+            default:
+                return '未知';              
+        }
+    }
+}
+
+function houseType() {
+    return function (value) {
+        switch (value) {
+            case 1:
+                return '出售';
+            default:
+                return '出租';
+        }
+    }
+}
 },{}],"frontend/frontend.config":[function(require,module,exports){
 require('frontend/frontendController');
 
@@ -398,7 +907,8 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
-            data: { pageTitle: '主页', pageSubTitle: ''},
+            templateUrl: 'modules/frontend/slider.html',
+            data: { pageTitle: '主页', pageSubTitle: '' },
             controller: 'frontendController'
         })
     ;
@@ -413,7 +923,7 @@ require('utility/modal');
 
 require('auth/loginController');
 
-function frontendController($scope, modal, menuService, userService) {
+function frontendController($scope, menuService, hngMsg) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -434,27 +944,293 @@ function frontendController($scope, modal, menuService, userService) {
 
     $scope.menus = [];
 
-    $scope.login = function(){
-        modal.show('modules/auth/login.html', 'loginController', 'login');
-    };
-
-    $scope.logout = function(){
-        userService.logout();
-    };
-
     menuService.frontendMenus()
         .then(function (menus) {
             $scope.menus = menus;
         });
 }
 
-app.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
-},{"auth/loginController":"auth/loginController","service/menu":"service/menu","service/user":"service/user","utility/modal":"utility/modal"}],"service/menu":[function(require,module,exports){
+app.controller('frontendController', ['$scope', 'menuService', 'hngMsg', frontendController]);
+},{"auth/loginController":"auth/loginController","service/menu":"service/menu","service/user":"service/user","utility/modal":"utility/modal"}],"house/house.config":[function(require,module,exports){
+require('house/houseController');
+
+app.config(['$stateProvider', router]);
+
+function router($stateProvider) {
+    $stateProvider
+        .state('house', {
+            url: '/house',
+            data: { pageTitle: '房源管理', pageSubTile: '列表' },
+            templateUrl: 'modules/house/house-list.html',
+            controller: 'houseController'
+        });
+}
+},{"house/houseController":"house/houseController"}],"house/houseController":[function(require,module,exports){
+require('filter/houseStatus');
+require('service/house')
+
+app.controller('houseController', ['$scope','houseService', houseController]);
+
+function houseController($scope, houseService) {
+
+    //var list = [
+    //    { Id: '0001', Type: "出租", Address: '中山区', Status: 1 },
+    //    { Id: '0002', Type: "出租", Address: '沙河口区', Status: 2 },
+    //    { Id: '0003', Type: "出售", Address: '西岗区', Status: 3 },
+    //    { Id: '0004', Type: "出售", Address: '甘井子区', Status: 4 },
+    //];
+
+    //$scope.total = list.length;
+    //$scope.current = 1;
+    //$scope.pageSize = 3;
+
+    //$scope.pagination = function () {
+    //    var total = $scope.total,
+    //        page = $scope.current,
+    //        pageSize = $scope.pageSize;
+    //    var data = [];
+    //    for (var i = (page - 1) * pageSize; i < page * pageSize && i < total; i++) {
+    //        data.push(list[i]);
+    //    }
+    //    $scope.data = data;
+    //}
+
+    //$scope.pagination();
+
+    $scope.current = 1;
+    $scope.pageSize = 3;
+
+    $scope.pagination = function () {
+        houseService.count().then(function (total) {
+            $scope.total = total;
+        })
+        houseService.search($scope.current, $scope.pageSize).then(function (data) {
+            $scope.data = data;
+        })
+    }
+
+    $scope.pagination();
+
+
+}
+},{"filter/houseStatus":"filter/houseStatus","service/house":"service/house"}],"service/customer":[function(require,module,exports){
+function customerService($http, $q) {
+    if (window.sessionStorage.getItem('list') == undefined) {
+        var list = [
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 },
+            { Id: '1', Code: 'ZhangS', Name: '张三', Tel: '18612345678', ShareStatus: '组内共享', Level: '不详', Status: 1 },
+            { Id: '1', Code: 'LiS', Name: '李四', Tel: '18912345678', ShareStatus: '组内共享', Level: '不详', Status: 2 }, ];
+        window.sessionStorage.setItem('list', JSON.stringify(list));
+    }
+
+    this.search = function (current, size) {
+        var d1 = $q.defer();
+        var d2 = $q.defer();
+
+        setTimeout(function () {
+            var total = JSON.parse(window.sessionStorage.getItem('list')).length;
+            d1.resolve(total);
+        }, 100);
+        setTimeout(function () {
+            var data = [];
+            var $data = JSON.parse(window.sessionStorage.getItem('list'));
+            for (var i = (current - 1) * size; (i < current * size) && (i < $data.length) ; i++) {
+                data.push($data[i]);
+            }
+
+            d2.resolve(data);
+        }, 500);
+
+        return $q.all([d1.promise, d2.promise]).then(function (args) {
+            return {
+                total: args[0],
+                data: args[1]
+            };
+        });
+    };
+
+    this.add = function (datasource) {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            var data = JSON.parse(window.sessionStorage.getItem('list'));
+            data.push(datasource);
+            window.sessionStorage.setItem('list', JSON.stringify(data));
+
+            defer.resolve({
+                success: true,
+                message: '添加成功'
+            });
+        }, 1000);
+
+        return defer.promise;
+    }
+
+    this.remove = function (list) {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            var data = JSON.parse(window.sessionStorage.getItem('list'));
+
+            var current = [],
+                flag;
+            angular.forEach(data, function (item, i) {
+                flag = false;
+                angular.forEach(list, function (toRemove, i) {
+                    if (item.Code == toRemove.Code) {
+                        flag = true;
+                        return false;
+                    }
+                });
+
+                if (!flag) {
+                    current.push(item);
+                }
+            });
+
+
+            window.sessionStorage.setItem('list', JSON.stringify(current));
+
+            defer.resolve({
+                success: true,
+                message: '删除成功'
+            });
+        }, 500);
+
+        return defer.promise;
+    }
+}
+
+app.service('customerService', ['$http', '$q', customerService]);
+
+
+},{}],"service/dataSource":[function(require,module,exports){
+app.service('dataSourceService', ['$http', '$q', dataSourceService]);
+
+function dataSourceService($http, $q) {
+    var all = [
+        {Id: 1, Code: '1', Name: '123', Database: '123', Server: '123', Status: 1},
+        {Id: 2, Code: '2', Name: '1223', Database: '1d23', Server: '123', Status: 1},
+        {Id: 3, Code: '3', Name: '1223', Database: '123f', Server: '123', Status: 2},
+        {Id: 4, Code: '4', Name: '1d23', Database: '12x3', Server: '123', Status: 2},
+        {Id: 5, Code: '5', Name: '12a3', Database: '1a23', Server: '123', Status: 1}
+    ];
+
+    this.search = function (page, limit, order, filter) {
+        var defer = $q.defer();
+        setTimeout(function () {
+            var total = all.length;
+            var data = [];
+
+            for (var i = (page - 1) * limit; (i < page * limit) && i < total; i++) {
+                data.push(all[i]);
+            }
+
+            defer.resolve({
+                total: all.length,
+                data: data
+            });
+        }, 300);
+
+        return defer.promise;
+    };
+
+    this.removeById = function (id) {
+        var defer = $q.defer();
+        angular.forEach(all, function(item, i){
+            if(item.Id === id){
+                all.splice(i, 1);
+                return false;
+            }
+        });
+
+        setTimeout(function(){
+            defer.resolve({
+                success: true,
+                message: '删除成功'
+            });
+        }, 300);
+
+        return defer.promise;
+    };
+}
+},{}],"service/employee":[function(require,module,exports){
+app.service('employeeService',['$http','$q',employeeService]);
+
+function employeeService($http,$q) {
+    var all = [
+		{ Code: 'aaaakkkkd', Name: '家电及', Gander: '1', Age: '32', Status: '1' },
+		{ Code: 'fgf', Name: '味儿', Gander: '1', Age: '12', Status: '1' },
+		{ Code: 'fg', Name: '二五二', Gander: '2', Age: '2', Status: '0' },
+		{ Code: 'hjk', Name: '我里', Gander: '2', Age: '12', Status: '1' },
+		{ Code: 'hj', Name: '玩儿', Gander: '2', Age: '32', Status: '1' },
+		{ Code: 'rty', Name: '金坷垃', Gander: '0', Age: '56', Status: '0' },
+		{ Code: 'uio', Name: '水电费', Gander: '0', Age: '98', Status: '0' }
+    ];
+
+    this.search = function (page,limit) {
+        var defer = $q.defer();
+        var data = all;
+        defer.resolve(data);
+        return defer.promise;
+    }
+};
+},{}],"service/house":[function(require,module,exports){
+app.service('houseService', ['$http', '$q', houseService]);
+
+function houseService($http, $q) {
+    var list = [
+    { Id: '0001', Type: 1, Address: '中山区', Status: 1 },
+    { Id: '0002', Type: "出租", Address: '沙河口区', Status: 2 },
+    { Id: '0003', Type: 2, Address: '西岗区', Status: 3 },
+    { Id: '0004', Type: "出售", Address: '甘井子区', Status: 4 },
+    ];
+
+    this.search = function (page, limit) {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            var total = list.length;
+            var data = [];
+            for (var i = (page - 1) * limit; i < page * limit && i < total; i++) {
+                data.push(list[i]);
+            }
+            defer.resolve(data);
+        }, 1000);
+        return defer.promise;
+    }
+
+    this.count = function () {
+        var defer = $q.defer();
+
+        setTimeout(function () {
+            defer.resolve(list.length);
+        }, 1000);
+        return defer.promise;
+    }
+}
+},{}],"service/menu":[function(require,module,exports){
 function menuService($http, $q) {
     this.authorizationMenus = function () {
         var menus = [
             {name: '权限管理系统', icon: 'icon-people', menus: [{name: '用户管理', url: '#/user'}]},
-            { name: '报表管理系统', icon: 'icon-home', menus: [{name: '数据源管理', url: '#/rpt/datasource'}] }
+            { name: '报表管理系统', icon: 'icon-home', menus: [{ name: '数据源管理', url: '#/datasource' }] },
+            { name: '职员管理', icon: 'icon-home', menus: [{ name: '职员管理', url: '#/employee' }] },
+            { name: '房源管理系统', icon: 'icon-map', menus: [{ name: '房源管理', url: '#/house' }] },
+            { name: '客源管理系统', icon: 'icon-map', menus: [{ name: '客户管理', url: '#/customer' }] }
         ];
 
         var defer = $q.defer();
@@ -617,20 +1393,34 @@ function userService($http, $q, setting) {
 }
 
 app.service('userService', ['$http', '$q', 'setting', userService]);
-},{"utility/setting":"utility/setting"}],"user/main":[function(require,module,exports){
+},{"utility/setting":"utility/setting"}],"user/user.config":[function(require,module,exports){
 require('user/userController');
 
 function route($stateProvider) {
     $stateProvider
-        .state('admin.user', {
+        .state('user', {
             url: '/user',
-            data: {pageTitle: '用户管理', pageSubTitle: '列表'},
-            views: {
-                'page@admin': {
-                    templateUrl: 'modules/user/user-list.html',
-                    controller: 'userController'
-                }
-            }
+            data: { pageTitle: '用户管理', pageSubTitle: '列表' },
+            templateUrl: 'modules/user/user-list.html',
+            controller: 'userController'
+        })
+        .state('user.add', {
+            url: '/user/add',
+            data: { pageTitle: '用户管理', pageSubTitle: '添加' },
+            templateUrl: 'modules/user/user-edit.html',
+            controller: 'userEditController'
+        })
+        .state('user.edit', {
+            url: '/user/edit/:id',
+            data: { pageTitle: '用户管理', pageSubTitle: '编辑' },
+            templateUrl: 'modules/user/user-edit.html',
+            controller: 'userEditController'
+        })
+        .state('user.detail', {
+            url: '/user/detail/:id',
+            data: { pageTitle: '用户管理', pageSubTitle: '编辑' },
+            templateUrl: 'modules/user/user-detail.html',
+            controller: 'userDetailController'
         })
     ;
 }
@@ -638,9 +1428,8 @@ function route($stateProvider) {
 app.config(['$stateProvider', route]);
 },{"user/userController":"user/userController"}],"user/userController":[function(require,module,exports){
 require('service/user');
-require('utility/msg');
 
-function userController($scope, userService, msg) {
+function userController($scope, userService) {
     $scope.list = [];
 
     //$scope.gridOptions = {
@@ -653,10 +1442,10 @@ function userController($scope, userService, msg) {
     //	]
     //};
 
-    userService.search(1, 100, {})
-        .then(function (result) {
-            $scope.list = result.data;
-        });
+    //userService.search(1, 100, {})
+    //    .then(function (result) {
+    //        $scope.list = result.data;
+    //    });
 }
 
 app.filter('userStatus', [function () {
@@ -670,25 +1459,11 @@ app.filter('userStatus', [function () {
             }
         }
     }])
-    .controller('userController', ['$scope', 'userService', 'msg', userController]);
-},{"service/user":"service/user","utility/msg":"utility/msg"}],"utility/guid":[function(require,module,exports){
-function guidFactory() {
-    return {
-        newGuid: function () {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0,
-                  v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-    };
-}
-
-app.factory('guid', [guidFactory]);
-},{}],"utility/modal":[function(require,module,exports){
+    .controller('userController', ['$scope', 'userService', userController]);
+},{"service/user":"service/user"}],"utility/modal":[function(require,module,exports){
 require('utility/setting');
 
-function modalFactory($uibModal, setting){
+function modalFactory($uibModal, $rootScope, $uibModalStack){
     var modal = {};
 
     modal.show = function(templateUrl, controller, size){
@@ -701,54 +1476,14 @@ function modalFactory($uibModal, setting){
         return dialog.result;
     };
 
+    $rootScope.$on('$stateChangeSuccess', function () {
+        $uibModalStack.dismissAll();
+    });
+
     return modal;
 }
 
-app.factory('modal', ['$uibModal', modalFactory]);
-},{"utility/setting":"utility/setting"}],"utility/msg":[function(require,module,exports){
-require('utility/setting');
-
-function msgFactory($uibModal, setting){
-    var msg = {};
-    
-    msg.confirm = function (model) {
-        if (!model.ok) {
-            model.ok = '确定';
-        }
-        if (!model.cancel) {
-            model.cancel = '取消';
-        }
-
-        return $uibModal.open({
-            templateUrl: 'app/templates/confirm.html',
-            backdrop: 'static',
-            controller: ['$scope', '$uibModalInstance', 'args', function ($scope, $uibModalInstance, args) {
-                $scope.ok = function () {
-                    $uibModalInstance.close(true);
-                };
-
-                $scope.cancel = function () {
-                    $uibModalInstance.close(false);
-                };
-
-                $scope.model = args;
-            }],
-            resolve: {
-                args: function () {
-                    return model;
-                }
-            }
-        }).result;
-    };
-    
-    msg.notify = function(content, options){
-        alert(content);
-    }
-    
-    return msg;
-}
-
-app.factory('msg', ['$uibModal', msgFactory]);
+app.factory('modal', ['$uibModal', '$rootScope', '$uibModalStack', modalFactory]);
 },{"utility/setting":"utility/setting"}],"utility/setting":[function(require,module,exports){
 function settingFactory() {
     var setting = {
@@ -757,8 +1492,9 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
-            path: 'modules/frontend/index.html',
-            pageSidebarClosed: false
+            path: '',
+            pageSidebarClosed: false,
+            menuCollapse: true
         },
 
         API: {
@@ -774,103 +1510,4 @@ function settingFactory() {
 }
 
 app.factory('setting', [settingFactory]);
-},{}],"utility/store":[function(require,module,exports){
-app.factory('localStore', [localStorageFactory]);
-app.factory('sessionStore', [sessionStorageFactory]);
-
-function localStorageFactory() {
-    return getStorage('localStorage');
-}
-
-function sessionStorageFactory() {
-    return getStorage('sessionStorage');
-}
-
-// short version of https://github.com/marcuswestin/store.js,
-// only support modern browsers (Firefox 4.0+, Chrome 11+, IE9+, iOS 4+)
-function getStorage(storageName) {
-    var win = window;
-    getStorage._storeCache = getStorage._storeCache || {};
-    if(getStorage._storeCache[storageName]) {
-        return getStorage._storeCache[storageName];
-    }
-
-    var store = {},
-      doc = win.document,
-      localStorageName = storageName,
-      storage;
-    store.disabled = false;
-    store.serialize = function(value) {
-        return JSON.stringify(value);
-    };
-    store.deserialize = function(value) {
-        if (typeof value != 'string') {
-            return undefined;
-        }
-        try {
-            return JSON.parse(value);
-        } catch (e) {
-            return value || undefined;
-        }
-    };
-    // Functions to encapsulate questionable FireFox 3.6.13 behavior
-    // when about.config::dom.storage.enabled === false
-    // See https://github.com/marcuswestin/store.js/issues#issue/13
-    function isLocalStorageNameSupported() {
-        try {
-            return (localStorageName in win && win[localStorageName]);
-        } catch (err) {
-            return false;
-        }
-    }
-    if (isLocalStorageNameSupported()) {
-        store.supported = true;
-        storage = win[localStorageName];
-        store.set = function(key, val) {
-            if (val === undefined) {
-                return store.remove(key);
-            }
-            storage.setItem(key, store.serialize(val));
-            return val;
-        };
-        store.get = function(key) {
-            return store.deserialize(storage.getItem(key));
-        };
-        store.remove = function(key) {
-            storage.removeItem(key);
-        };
-        store.clear = function() {
-            storage.clear();
-        };
-        store.getAll = function() {
-            var ret = {};
-            store.forEach(function(key, val) {
-                ret[key] = val;
-            });
-            return ret;
-        };
-        store.forEach = function(callback) {
-            for (var i = 0; i < storage.length; i++) {
-                var key = storage.key(i);
-                callback(key, store.get(key));
-            }
-        };
-        try {
-            var testKey = '__storejs__';
-            store.set(testKey, testKey);
-            if (store.get(testKey) != testKey) {
-                store.disabled = true;
-            }
-            store.remove(testKey);
-        } catch (e) {
-            store.disabled = true;
-        }
-        store.enabled = !store.disabled;
-    } else {
-        store.supported = false;
-        store.enabled = false;
-    }
-    getStorage._storeCache[storageName] = store;
-    return store;
-};
 },{}]},{},["app"]);

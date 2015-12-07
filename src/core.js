@@ -8,13 +8,14 @@
 // require('../libs/angular-bootstrap/ui-bootstrap-tpls');
 // require('../libs/angular-ui-grid/ui-grid');
 
-var utilities = angular.module('example.utility', ['ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
-var services = angular.module('example.service', ['example.utility']);
-var directives = angular.module('example.directive', ['example.utility']);
-var filters = angular.module('example.filters', ['example.utility']);
+var utilities = angular.module('example.utility', ['hng', 'ngLocale', 'ngTouch', 'ngAnimate', 'ui.router', 'ui.bootstrap']);
+var services = angular.module('example.service', ['hng', 'example.utility']);
+var directives = angular.module('example.directive', ['hng', 'example.utility']);
+var filters = angular.module('example.filters', ['hng', 'example.utility']);
 var example = angular.module('example', [
     'example.directive',
     'example.service',
+    'example.filters',
     'example.utility',
     'ngLocale',
     'ngTouch',

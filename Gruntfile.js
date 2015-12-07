@@ -58,7 +58,6 @@ module.exports = function (grunt) {
                     }
                 ])
             },
-
             'app': {
                 src: ['src/app.js'],
                 dest: 'src/main.js'
@@ -110,7 +109,7 @@ module.exports = function (grunt) {
                 tasks: ['default']
             },
             scripts: {
-                files: ['src/components/**/*.js', 'src/modules/**/*.js', 'src/app.js', 'src/core.js'],
+                files: ['src/components/**/*.js', 'src/modules/**/*.js', 'src/services/**/*.js', 'src/app.js', 'src/core.js'],
                 tasks: ['scripts']
             },
             options: {

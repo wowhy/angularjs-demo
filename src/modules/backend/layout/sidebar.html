@@ -1,10 +1,5 @@
-<div ui-page-sidebar class="page-sidebar navbar-collapse collapse"
-     ng-controller="navbarController">
-    <ul ui-page-sidebar-menu class="page-sidebar-menu"
-        data-keep-expanded="false"
-        data-auto-scroll="true"
-        data-slide-speed="200"
-        ng-class="{'page-sidebar-menu-closed': setting.layout.pageSidebarClosed}">
+<div ng-controller="navbarController">
+    <ul ui-page-sidebar-menu class="nav nav-stacked">
         <li class="start">
             <a href="#/dashboard">
                 <i class="icon-home"></i>
@@ -15,10 +10,10 @@
             <a ng-href="{{nav.url}}">
                 <i class="{{nav.icon}}"></i>
                 <span class="title" ng-bind="nav.name"></span>
-                <span ng-if="nav.menus && nav.menus.length > 0" class="arrow "></span>
+                <!--<span ng-if="nav.menus && nav.menus.length > 0" class="arrow"></span>-->
             </a>
             <ul ng-if="nav.menus && nav.menus.length > 0"
-                class="sub-menu">
+                class="sub-menu nav nav-stacked">
                 <li ng-repeat="menu in nav.menus">
                     <a ng-href="{{menu.url}}">
                         <i class="{{menu.icon}}"></i><span ng-bind="menu.name"></span>

@@ -6,7 +6,8 @@ function route($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('frontend', {
             url: '/',
-            data: { pageTitle: '主页', pageSubTitle: ''},
+            templateUrl: 'modules/frontend/slider.html',
+            data: { pageTitle: '主页', pageSubTitle: '' },
             controller: 'frontendController'
         })
     ;

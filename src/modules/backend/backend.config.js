@@ -5,4 +5,4 @@
 // 引用依赖模块，配置路由
 
 require('utility/setting');
-require('backend/adminController');
+require('backend/backendController');

@@ -1,10 +1,8 @@
-﻿require('utility/store');
-
-var session_key = 'user_session',
+﻿var session_key = 'user_session',
     session_timestamp_key = 'user_session_timestamp',
     expired_duration = 1000 * 60 * 120; // 2 hours
 
-app.factory('session', ['localStore', 'guid', sessionFactory]);
+app.factory('session', ['hngLocalStorage', 'hngGuid', sessionFactory]);
 
 function sessionFactory(store, guid) {
     var _session = {
@@ -31,8 +29,6 @@ function sessionFactory(store, guid) {
                 _syncSession(storedSession || {});
             }
         }
-        console.log('[Init Session]');
-        console.log(_session);
     }
 
     function onClear() {
@@ -57,12 +53,12 @@ function sessionFactory(store, guid) {
     }
 
     function isExpired() {
-        function ft(num) {
-            if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
-            if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
-            if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
-            return num;
-        }
+        //function ft(num) {
+        //    if (num > 1000 * 60 * 60) return (num / (1000 * 60 * 60)).toFixed(1) + ' hour';
+        //    if (num > 1000 * 60) return (num / (1000 * 60)).toFixed(1) + ' minutes';
+        //    if (num > 1000) return (Math.floor(num / 1000)) + 'secs';
+        //    return num;
+        //}
         if (!store.enabled) return true;
         var lastSavedTimestamp = store.get(session_timestamp_key);
         if (!lastSavedTimestamp) { // has not save any data yet
@@ -71,7 +67,7 @@ function sessionFactory(store, guid) {
             var now = Date.now(),
               diff = now - lastSavedTimestamp;
             //expired after two hour
-            console.log("session update time diff(" + diff + "):" + ft(diff));
+            //console.log("session update time diff(" + diff + "):" + ft(diff));
             return diff > expired_duration;
         }
     }

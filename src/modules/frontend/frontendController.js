@@ -1,10 +1,10 @@
-require('service/menu');
+﻿require('service/menu');
 require('service/user');
 require('utility/modal');
 
 require('auth/loginController');
 
-function frontendController($scope, modal, menuService, userService) {
+function frontendController($scope, menuService, hngMsg) {
     $scope.slides = [{
         image: 'assets/global/img/layerslider/slide1/bg.jpg',
         title: 'Hi',
@@ -25,18 +25,10 @@ function frontendController($scope, modal, menuService, userService) {
 
     $scope.menus = [];
 
-    $scope.login = function(){
-        modal.show('modules/auth/login.html', 'loginController', 'login');
-    };
-
-    $scope.logout = function(){
-        userService.logout();
-    };
-
     menuService.frontendMenus()
         .then(function (menus) {
             $scope.menus = menus;
         });
 }
 
-app.controller('frontendController', ['$scope', 'modal', 'menuService', 'userService', frontendController]);
+app.controller('frontendController', ['$scope', 'menuService', 'hngMsg', frontendController]);

@@ -5,8 +5,9 @@ function settingFactory() {
         email: 'wowhy@outlook.com',
 
         layout: {
-            path: 'modules/frontend/index.html',
-            pageSidebarClosed: false
+            path: '',
+            pageSidebarClosed: false,
+            menuCollapse: true
         },
 
         API: {

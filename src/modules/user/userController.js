@@ -1,7 +1,6 @@
 require('service/user');
-require('utility/msg');
 
-function userController($scope, userService, msg) {
+function userController($scope, userService) {
     $scope.list = [];
 
     //$scope.gridOptions = {
@@ -14,10 +13,10 @@ function userController($scope, userService, msg) {
     //	]
     //};
 
-    userService.search(1, 100, {})
-        .then(function (result) {
-            $scope.list = result.data;
-        });
+    //userService.search(1, 100, {})
+    //    .then(function (result) {
+    //        $scope.list = result.data;
+    //    });
 }
 
 app.filter('userStatus', [function () {
@@ -31,4 +30,4 @@ app.filter('userStatus', [function () {
             }
         }
     }])
-    .controller('userController', ['$scope', 'userService', 'msg', userController]);
+    .controller('userController', ['$scope', 'userService', userController]);

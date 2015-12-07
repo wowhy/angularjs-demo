@@ -1,14 +1,13 @@
-<link href="assets/frontend/layout/css/site.css" rel="stylesheet"/>
-<link href="assets/frontend/layout/css/site-responsive.css" rel="stylesheet"/>
+<link href="assets/frontend/layout/css/style.css" rel="stylesheet"/>
+<link href="assets/frontend/layout/css/style-responsive.css" rel="stylesheet"/>
 
-<header ng-include="'modules/frontend/header.html'"
-        ng-controller="frontendController">
+<header ng-include="'modules/frontend/header.html'">
 </header>
 
 <main class="main">
-    <div class="container" ng-view>
+    <div ui-view>
     </div>
-</main>
+</main> 
 
 <footer ng-include="'modules/frontend/footer.html'">
 </footer>

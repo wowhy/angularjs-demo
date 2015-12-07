@@ -21,7 +21,7 @@ function uiPageSidebarMenu(setting) {
                     return;
                 }
 
-                var slideSpeed = parseInt(attrs.slideSpeed);
+                var slideSpeed = 200;
 
                 if (sub.is(":visible")) {
                     $('.arrow', $(this)).removeClass("open");

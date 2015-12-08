@@ -1,0 +1,188 @@
+.block-ui {
+    position: relative;
+}
+
+body.block-ui {
+    position: static;
+}
+
+body.block-ui > .block-ui-container,
+.block-ui-main > .block-ui-container {
+    position: fixed;
+}
+
+.block-ui-container {
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    filter: alpha(opacity=00);
+}
+
+.block-ui-active > .block-ui-container {
+    height: 100%;
+    cursor: wait;
+}
+
+.block-ui-active .block-ui-active > .block-ui-container {
+    height: 0;
+}
+
+.block-ui-visible > .block-ui-container {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.block-ui-overlay {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    background-color: white;
+}
+
+.block-ui-message-container {
+    position: absolute;
+    top: 35%;
+    left: 0;
+    right: 0;
+    height: 0;
+    text-align: center;
+    z-index: 10001;
+}
+
+.block-ui-message {
+    display: inline-block;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 3.5em;
+    height: 3.5em;
+
+    border: 1px solid #ddd;
+    background-color: #eee;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* - - - - - - 8-< - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+.block-ui-anim-fade > .block-ui-container {
+    transition: height 0s linear 200ms, opacity 200ms ease 0s;
+}
+
+.block-ui-anim-fade.block-ui-active > .block-ui-container {
+    /*this resets the initial delay of the height */
+    /*and sizes the block to full height at once at the start of the block. */
+    transition-delay: 0s;
+}
+
+@-moz-keyframes refreshing-loader {
+    0% {
+        -moz-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -moz-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes refreshing-loader {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes refreshing-loader {
+    0% {
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+/* :not(:required) hides this rule from IE9 and below */
+.block-ui-loading:not(:required) {
+    -moz-animation: refreshing-loader 1000ms infinite linear;
+    -webkit-animation: refreshing-loader 1000ms infinite linear;
+    animation: refreshing-loader 1000ms infinite linear;
+    -moz-border-radius: 1.6em;
+    -webkit-border-radius: 1.6em;
+    border-radius: 1.6em;
+    border: 0.2em solid #9ac;
+    border-left-color: transparent;
+
+    color: transparent;
+    display: inline-block;
+    width: 1.8em;
+    height: 1.8em;
+    text-indent: 100%;
+}
+.block-ui-loading:not(:required):after {
+    display: block;
+    border: 0.3em solid transparent;
+    border-top-color: #9ac;
+    border-left-color: #9ac;
+    content: '';
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    margin-left: -0.15em;
+    margin-top: 60%;
+}
+
+.hfe-page-list {
+}
+
+.hfe-table-container{
+}
+
+.hfe-table-toolbar {
+    border-bottom: 1px solid #ddd;
+    padding: 3px;
+    background-color: #f5f5f5;
+    min-width: 498px;
+}
+
+.hfe-table-toolbar .btn {
+    background-color: transparent;
+    border: none;
+    padding: 6px;
+}
+
+.hfe-table-toolbar .btn .glyphicon {
+    padding-right: 3px;
+}
+
+.hfe-table-sorter:before {
+    content: "\25B9";
+    float: right;
+}
+
+.hfe-table-container .pagination-text{
+    margin: 6px 12px 6px 0px;
+    color: #777;
+}
+
+.hfe-table-container table > tfoot > tr > td >.pagination{
+    margin: 0px;
+}
+
+.hfe-table-container .table>thead>tr>th{
+    text-align: center;
+}

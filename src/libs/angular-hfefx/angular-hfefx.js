@@ -2,6 +2,7 @@
 
 hngModule.config(['blockUIConfig', function(blockUIConfig){
     blockUIConfig.message = '请稍等...';
+    blockUIConfig.template = '<div class=\"block-ui-overlay\"></div><div class=\"block-ui-message-container\" aria-live=\"assertive\" aria-atomic=\"true\"><div class=\"block-ui-message\" ng-class=\"$_blockUiMessageClass\"><span class=\"block-ui-loading\"></span>&nbsp;&nbsp;{{ state.message }}</div></div>';
     // blockUIConfig.autoBlock = false;
 }]);
 
@@ -32,7 +33,7 @@ hngModule.service('hngCore', [
             sessionStorage: hngSessionStorage
         };
     }]);
-;(function (hngModule) {
+(function (hngModule) {
     hngModule.directive('hngShowModal', ['hngModal', hngShowModal]);
 
     function hngShowModal(hngModal) {
@@ -842,7 +843,7 @@ hngModule.service('hngCore', [
         return store;
     };
 })(hngModule);
-;angular.module('hng').run(['$templateCache', function($templateCache) {
+angular.module('hng').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('/hfefx/template/alert.html',

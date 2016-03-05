@@ -1,9 +1,13 @@
+import LoginController from './login.controller';
+
 function route($stateProvider) {
     let login = {
         name: 'login',
-        url: '/login',
+        url: '/admin/login',
         data: {title: '登录'},
-        template: '<div><h3>登录页面</h3></div>'
+        template: '<div><h3>{{vm.message}}</h3></div>',
+        controller: LoginController,
+        controllerAs: 'vm'
     };
 
     $stateProvider.state(login);

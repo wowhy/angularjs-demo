@@ -1,1 +1,126 @@
-!function(e){function t(o){if(n[o])return n[o].exports;var r=n[o]={exports:{},id:o,loaded:!1};return e[o].call(r.exports,r,r.exports,t),r.loaded=!0,r.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}({0:function(e,t,n){"use strict";function o(e){return e&&e.__esModule?e:{"default":e}}var r=n(1),a=o(r),u=n(14),i=o(u);angular.module("sample",[a["default"],i["default"]])},1:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t["default"]=angular.module("sample.core",["ng","ngLocale","ngTouch","ngAnimate","ngSanitize","ui.router","ui.bootstrap","blockUI"]).config(["$locationProvider",function(e){e.html5Mode(!0)}]).run(["$rootScope","$state",function(e,t){e.$state=t}]).name,e.exports=t["default"]},14:function(e,t,n){"use strict";function o(e){return e&&e.__esModule?e:{"default":e}}function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function a(e,t){t.otherwise("/");var n={name:"index",url:"/",data:{title:"前台"},template:"<div><h3>前台</h3></div>"};e.state(n)}a.$inject=["$stateProvider","$urlRouterProvider"],Object.defineProperty(t,"__esModule",{value:!0});var u=n(1),i=o(u),l=function s(){r(this,s)};t["default"]=angular.module("simple.app.modules",[i["default"]]).constant("settings",new l).config(a).name,e.exports=t["default"]}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _commonCore = __webpack_require__(1);
+
+	var _commonCore2 = _interopRequireDefault(_commonCore);
+
+	var _configJs = __webpack_require__(17);
+
+	var _configJs2 = _interopRequireDefault(_configJs);
+
+	angular.module('sample', [_commonCore2['default'], _configJs2['default']]);
+
+/***/ },
+
+/***/ 1:
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	exports['default'] = angular.module('sample.core', [
+	// angular modules
+	'ng', 'ngLocale', 'ngTouch', 'ngAnimate', 'ngSanitize',
+
+	// 3rd-party modules
+	'ui.router', 'ui.bootstrap', 'blockUI']).config(['$locationProvider', function ($locationProvider) {
+	    $locationProvider.html5Mode(true);
+	}]).run(["$rootScope", "$state", function ($rootScope, $state) {
+	    $rootScope.$state = $state;
+	}]).name;
+	module.exports = exports['default'];
+
+/***/ },
+
+/***/ 17:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	routing.$inject = ["$stateProvider", "$urlRouterProvider"];
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _commonCore = __webpack_require__(1);
+
+	var _commonCore2 = _interopRequireDefault(_commonCore);
+
+	var settings = function settings() {
+	    _classCallCheck(this, settings);
+	};
+
+	function routing($stateProvider, $urlRouterProvider) {
+	    $urlRouterProvider.otherwise('/');
+
+	    var index = {
+	        name: 'index',
+	        url: '/',
+	        data: { title: '前台' },
+	        template: '<div><h3>前台</h3></div>'
+	    };
+
+	    $stateProvider.state(index);
+	}
+
+	exports['default'] = angular.module('simple.app.modules', [_commonCore2['default']]).constant('settings', new settings()).config(routing).name;
+	module.exports = exports['default'];
+
+/***/ }
+
+/******/ });

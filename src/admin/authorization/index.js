@@ -1,6 +1,6 @@
-import route from 'route';
+import route from './route';
 
-export default angular.module('sample.admin.modules.authorization', [
+export default angular.module('sample.admin.authorization', [
         'sample.core'
     ])
     .config(route)

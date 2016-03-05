@@ -2,10 +2,12 @@ import core from '../common/core';
 import settings from './settings';
 import route from './route';
 import layout from './layout';
+import authorization from './authorization';
 
 let module = angular.module('sample.admin', [
         core,
-        layout
+        layout,
+        authorization
     ])
     .constant('settings', settings)
     .config(route)

@@ -1,0 +1,28 @@
+<section class="sidebar">
+    <ul class="sidebar-menu">
+        <li>
+            <a ui-sref="index">
+                <i class="fa fa-home"></i>
+                <span class="title">后台管理</span>
+            </a>
+        </li>
+
+        <li class="treeview active" ng-repeat="nav in vm.menus">
+            <a ng-href="{{nav.url ? '#' + nav.url: '' }}">
+
+                <i class="fa fa-{{nav.icon || 'folder'}}"></i>
+                <span ng-bind="nav.name"></span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+
+            <ul class="treeview-menu">
+                <li ng-repeat="menu in nav.menus">
+                    <a ng-href="{{menu.url ? '#' + menu.url: '' }}">
+                        <i class="fa fa-{{menu.icon || 'link'}}"></i>
+                        <span ng-bind="menu.name"></span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>

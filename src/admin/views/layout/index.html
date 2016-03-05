@@ -1,0 +1,19 @@
+<header class="main-header" ng-include="'admin/views/layout/header.html'">
+</header>
+<main>
+    <aside class="main-sidebar"
+           ng-include="'admin/views/layout/sidebar.html'">
+    </aside>
+    <div class="content-wrapper">
+        <section class="content-header"
+                 ng-include="'admin/views/layout/page-head.html'">
+        </section>
+
+        <section class="content" ui-view>
+        </section>
+    </div>
+</main>
+
+<footer class="main-footer"
+        ng-include="'admin/views/layout/footer.html'">
+</footer>

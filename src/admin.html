@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="sample.admin">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title ng-bind="$state.current.data.title"></title>
+    <base href="/">
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <link href="/assets/libs/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/assets/libs/angular-block-ui-0.2.2/dist/angular-block-ui.css" rel="stylesheet"/>
+    <link href="/assets/libs/font-awesome-4.0.3/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="/assets/libs/AdminLTE/css/AdminLTE.css" rel="stylesheet"/>
+    <link href="/assets/libs/AdminLTE/css/skins/_all-skins.css" rel="stylesheet"/>
+</head>
+<body class="hold-transition skin-green-light sidebar-mini">
+<div class="wrapper"
+     ng-include="'admin/views/layout/index.html'">
+</div>
+
+<script src="/assets/libs/jquery-2.1.4/dist/jquery.js"></script>
+<script src="/assets/libs/bootstrap-3.3.6/js/bootstrap.js"></script>
+<script src="/assets/libs/angular-1.4.8/angular.js"></script>
+<script src="/assets/libs/angular-touch-1.4.8/angular-touch.js"></script>
+<script src="/assets/libs/angular-animate-1.4.8/angular-animate.js"></script>
+<script src="/assets/libs/angular-sanitize-1.4.8/angular-sanitize.js"></script>
+<script src="/assets/libs/angular-block-ui-0.2.2/dist/angular-block-ui.js"></script>
+<script src="/assets/libs/angular-ui-router-0.2.15/release/angular-ui-router.js"></script>
+<script src="/assets/libs/angular-bootstrap-0.14.3/ui-bootstrap-tpls.js"></script>
+<script src="/assets/libs/angular-i18n/angular-locale_zh-cn.js"></script>
+<script src="/assets/libs/AdminLTE/js/app.js"></script>
+
+<script src="/admin.bundle.js"></script>
+</body>
+</html>

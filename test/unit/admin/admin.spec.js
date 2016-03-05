@@ -1,4 +1,4 @@
-import admin from '../../../src/admin/admin.js'
+import admin from '../../../src/admin/index.js'
 
 describe('Admin', function () {
     let rootScope,

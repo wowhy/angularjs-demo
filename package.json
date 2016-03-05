@@ -38,7 +38,6 @@
     "webpack": "^1.12.9"
   },
   "scripts": {
-    "prestart": "npm install",
     "start": "node test/server/server.js",
     "test": "karma start karma.conf.js",
     "test-single-run": "karma start karma.conf.js  --single-run",

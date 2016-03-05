@@ -23,7 +23,6 @@ module.exports = function (config) {
 
         port: 9876,
 
-        // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,
         singleRun: false,
 

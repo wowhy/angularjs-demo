@@ -2,8 +2,8 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        admin: './src/admin/admin.js',
-        index: './src/app/app.js'
+        admin: './src/admin/index.js',
+        index: './src/app/index.js'
     },
     output: {
         path: './src',

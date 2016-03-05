@@ -6,4 +6,4 @@ import 'ngtemplate?relativeTo=/src/admin/&prefix=admin/!../views/layout/sidebar.
 
 import './layout.css';
 
-export default angular.module('sample.admin.layout', []).name;
+export default angular.module('sample.admin.modules.layout', []).name;

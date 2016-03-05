@@ -2,7 +2,7 @@ module.exports = function (config) {
     config.set({
         basePath: '',
         frameworks: ['mocha', 'chai'],
-        browsers: ['Chrome'],
+        browsers: ['PhantomJS2'],
         reporters: ['mocha', 'coverage'],
         coverageReporter: {
             reporters: [
@@ -21,8 +21,8 @@ module.exports = function (config) {
         port: 9876,
 
         // enable / disable watching file and executing tests whenever any file changes
-        //autoWatch: true,
-        singleRun: true,
+        autoWatch: true,
+        singleRun: false,
 
         webpack: require('./webpack.test.js')
     })

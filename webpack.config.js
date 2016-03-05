@@ -1,3 +1,5 @@
+var webpack = require('webpack');
+
 module.exports = {
     entry: {
         admin: './src/admin/admin.js',
@@ -13,5 +15,8 @@ module.exports = {
             {test: /\.html/, loader: 'raw!html-minifier'},
             {test: /\.css$/, loader: 'style!css'}
         ]
-    }
+    },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin()
+    ]
 };

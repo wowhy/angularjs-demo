@@ -3,7 +3,7 @@ module.exports = {
     module: {
         preLoaders: [{
             test: /\.js$/,
-            exclude: /(test|node_modules|bower_components|libs)\//,
+            exclude: /(test|node_modules|bower_components|libs)/,
             loader: 'isparta-instrumenter',
             query: {
                 'babel': {

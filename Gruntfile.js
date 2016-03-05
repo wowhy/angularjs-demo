@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         webpack: {
-            dev: require('./webpack.dev.js')
+            dev: require('./webpack.config.js')
         },
         watch: {
             files: ['src/**/*.js', 'src/**/*.css', '!src/*.bundle.js', '!src/assets/**/*.js'],

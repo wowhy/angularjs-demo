@@ -10,6 +10,9 @@ module.exports = function (config) {
                 {type: 'html', dir: 'coverage/'}
             ]
         },
+        mochaReporter: {
+            showDiff: true
+        },
 
         files: loadFiles().concat([
             'test/unit/index.spec.js'

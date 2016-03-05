@@ -6,7 +6,7 @@ module.exports = function (grunt) {
             dev: require('./webpack.config.js')
         },
         watch: {
-            files: ['src/**/*.js', 'src/**/*.css', '!src/*.bundle.js', '!src/assets/**/*.js'],
+            files: ['src/**/*.js', 'src/**/*.css', 'src/**/*.html', '!src/*.bundle.js', '!src/assets/**/*.js'],
             tasks: ['webpack']
         },
         browserSync: {
@@ -19,6 +19,7 @@ module.exports = function (grunt) {
                 options: {
                     watchTask: true,
                     notify: false,
+                    port: 3000,
                     proxy: 'http://localhost:8000/'
                 }
             }

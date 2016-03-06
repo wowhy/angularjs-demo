@@ -1,4 +1,4 @@
-import UserDTO from '../../../src/models/user.js'
+import UserDTO from '../../../src/models/user.js';
 
 describe('Models', function () {
     describe('#User', function () {

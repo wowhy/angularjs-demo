@@ -10,13 +10,19 @@ module.exports = {
         filename: '[name].bundle.js'
     },
     module: {
-        loaders: [
-            {test: /\.js$/, exclude: [/node_modules/], loader: 'ng-annotate!babel'},
-            {test: /\.html/, loader: 'raw!html-minifier'},
-            {test: /\.css$/, loader: 'style!css'}
-        ]
+        loaders: [{
+            test: /\.js$/,
+            exclude: [/node_modules/],
+            loader: 'ng-annotate!babel'
+        }, {
+            test: /\.html/,
+            loader: 'raw!html-minifier'
+        }, {
+            test: /\.css$/,
+            loader: 'style!css'
+        }]
     },
     plugins: [
-        //new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.UglifyJsPlugin()
     ]
 };

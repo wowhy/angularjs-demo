@@ -11,7 +11,7 @@ export default angular.module('sample.core', [
     'ui.bootstrap',
     'blockUI'
 ]).config(['$locationProvider', function ($locationProvider) {
-    $locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(true);
 }]).run(function ($rootScope, $state) {
     $rootScope.$state = $state;
 }).name;

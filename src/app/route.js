@@ -1,11 +1,11 @@
 function route($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/admin');
+    $urlRouterProvider.otherwise('/');
 
     var index = {
         name: 'index',
         url: '/',
-        data: {title: '后台管理'},
-        template: '<div><h3>后台管理</h3></div>'
+        data: {title: '前台'},
+        template: '<div><h3>前台</h3></div>'
     };
 
     $stateProvider.state(index);

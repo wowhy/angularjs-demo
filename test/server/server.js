@@ -21,24 +21,24 @@ router.use(function (req, res, next) {
 
 app.use('/', express.static(path.join(__dirname, '../../src/')));
 
-app.use('/', function (req, res, next) {
-    if (req.path.startsWith('/api') ||
-        req.path.startsWith('/assets') ||
-        req.path.startsWith('/admin') ||
-        req.path.startsWith('/views')) {
-        return next();
-    } else {
-        if (req.path.endsWith('.html')) {
-            return next();
-        }
-
-        return res.sendfile(path.join(__dirname, '../../src/index.html'));
-    }
-});
-
-app.use('/admin/', function (req, res, next) {
-    res.sendfile(path.join(__dirname, '../../src/admin.html'))
-});
+//app.use('/', function (req, res, next) {
+//    if (req.path.startsWith('/api') ||
+//        req.path.startsWith('/assets') ||
+//        req.path.startsWith('/admin') ||
+//        req.path.startsWith('/views')) {
+//        return next();
+//    } else {
+//        if (req.path.endsWith('.html')) {
+//            return next();
+//        }
+//
+//        return res.sendfile(path.join(__dirname, '../../src/index.html'));
+//    }
+//});
+//
+//app.use('/admin/', function (req, res, next) {
+//    res.sendfile(path.join(__dirname, '../../src/admin.html'))
+//});
 
 
 // api

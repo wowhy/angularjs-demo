@@ -1,4 +1,7 @@
 import core from '../common/core';
-import modules from './config.js';
+import route from './route.js';
 
-angular.module('sample', [core, modules]);
+const module = angular.module('sample', [core])
+    .config(route);
+
+export default module;

@@ -15,6 +15,8 @@ module.exports = function (config) {
         },
 
         files: loadFiles().concat([
+            'src/admin.bundle.js',
+            'src/index.bundle.js',
             'test/unit/index.spec.js'
         ]),
         preprocessors: {
